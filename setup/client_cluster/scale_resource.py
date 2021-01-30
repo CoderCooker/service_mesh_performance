@@ -116,7 +116,7 @@ def Run(args):
             else:
                 assert prepare_cluster(cluster, log=args.log, cluster_type=cluster_type) == 0, "Failed connecting {}".format(cluster)
 
-            onboard = 'false'
+            onboard = 'true'
             if onboard == 'true':
                 args.log.info("onboard cluster {}.".format(cluster))
                 install_tenant_cluster(csp, cluster, log=args.log, cluster_type=cluster_type, kubeconfig=kubeconfig)
@@ -124,9 +124,9 @@ def Run(args):
                 args.log.info("install istio on cluster {}.".format(cluster))
                 istio(csp, cluster, 'install', log=args.log, cluster_type=cluster_type, kubeconfig=kubeconfig)
 
-            #exhaust_cluster_resource(cluster, int(apps_per_cluster), log=args.log, cluster_type=cluster_type, kubeconfig=kubeconfig)
+            exhaust_cluster_resource(cluster, int(apps_per_cluster), log=args.log, cluster_type=cluster_type, kubeconfig=kubeconfig)
 
-            clean_up = 'true'
+            clean_up = 'false'
             if clean_up == 'true':
                 for cluster in clusters:
                     if(len(cluster)==0):
