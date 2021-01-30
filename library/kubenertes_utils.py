@@ -219,7 +219,7 @@ def scale_pod(cluster, namespace, deployment, pod_num, log=None, cluster_type='E
 def prepare_kind_cluster(client_cluster, log=None):
     try:
         cur_dir = os.getenv("WORKSPACE")
-        cur_dir = '/home/centos/workspace/slave-setup'
+        cur_dir = '/home/centos/workspace/exhaust-slave-1'
         file_id = generate_randoms()
         tmp_kube_config = "{}/{}".format(cur_dir, file_id)
         cmd = "echo \'centos\' | sudo -S {} get kubeconfig --name={} >> {}".format(KIND_EXECUTION_PATH, client_cluster, tmp_kube_config)
@@ -278,7 +278,7 @@ def prepare_cluster(client_cluster, log=None, cluster_type='EKS'):
                 log.info("Loading cluster {} context.".format(client_cluster))
 
             cur_dir = os.getenv("WORKSPACE")
-            cur_dir = '/home/centos/workspace/slave-setup'
+            cur_dir = '/home/centos/workspace/exhaust-slave-1'
             tmp_kube_config = "{}/cluster.config".format(cur_dir)
             log.info("temp kube config {}".format(tmp_kube_config))
             if not os.path.exists(tmp_kube_config):
