@@ -221,7 +221,7 @@ def prepare_kind_cluster(client_cluster, log=None):
         cur_dir = os.getenv("WORKSPACE")
         file_id = generate_randoms()
         tmp_kube_config = "{}/{}".format(cur_dir, file_id)
-        cmd = "echo \'centos\' | sudo -S {} get kubeconfig --name={} >> {}".format(cur_dir, client_cluster, tmp_kube_config)
+        cmd = "echo \'centos\' | sudo -S {}/kind get kubeconfig --name={} >> {}".format(cur_dir, client_cluster, tmp_kube_config)
         rt, out, err = run_local_sh_cmd(cmd)
         log.info("getting kind cluster {} configuration file [cmd] {} rt {} out {} err {}".format(client_cluster, cmd, rt, out, err))
         assert rt == 0, "Failed executing {}, err {}".format(cmd, err)
@@ -286,7 +286,7 @@ def prepare_cluster(client_cluster, log=None, cluster_type='EKS'):
                 log.info("tmp_kube_config {} size {} emptying it.".format(tmp_kube_config, tmp_kube_config_file_size))
                 open(tmp_kube_config, 'w').close()
 
-            cmd = "echo \'centos\' | sudo -S {} get kubeconfig --name={} >> {}".format(cur_dir, client_cluster, tmp_kube_config)
+            cmd = "echo \'centos\' | sudo -S {}/kind get kubeconfig --name={} >> {}".format(cur_dir, client_cluster, tmp_kube_config)
             log.info("getting kind cluster {} configuration file [cmd] {}".format(client_cluster, cmd))
             rt, out, err = run_local_sh_cmd(cmd)
             assert rt == 0, "Failed executing {}, err {}".format(cmd, err)
