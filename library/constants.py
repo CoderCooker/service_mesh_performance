@@ -82,18 +82,13 @@ AGENT_NS = 'vmware-system-tsm'
 DEFAULT_PERIOD = 3
 
 SCALE_UP_APP_YAML = 'https://raw.githubusercontent.com/istio/istio/release-1.8/samples/bookinfo/platform/kube/bookinfo.yaml'
+MORE_PODS_YAML = 'https://raw.githubusercontent.com/CoderCooker/vs-app/master/tsm-scale/acme-all-manifest.yaml'
 
 KUBERNETES_ISTIO_NETWORK_GROUP = "networking.istio.io"
 KUBERNETES_ISTIO_NETWORK_VERSION = "v1beta1"
 KUBERNETES_ISTIO_GATEWAY_PLURAL = "gateways"
 
 KUBERNETES_ISTIO_VIRTUAL_SERVICE_PLURALS = "virtualservices"
-
-KIND_EXECUTION_PATH = '/var/lib/jenkins/kind'
-KIND_CONFIG_FILE = '/var/lib/jenkins/kind.config'
-
-KIND_EXECUTION_PATH = '/home/centos/workspace/slave-setup/kind'
-KIND_CONFIG_FILE = '/home/centos/workspace/slave-setup/kind.config'
 
 CLIENT_CLUSTER_PREFIX = 'span-client-clusters'
 JENKINS_KUBECTL_PREFIX = "echo \'centos\' | sudo -S "

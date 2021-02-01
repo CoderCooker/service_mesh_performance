@@ -52,8 +52,25 @@ def exhaust_cluster_resource(cluster, apps_per_cluster, log=None, cluster_type='
                 del_namespace_v2(cluster, context, test_name_space, log, kubeconfig=kubeconfig)
                 log.info("cluster {} resource has been exhausted.".format(cluster))
                 return 0
- 
-            name_spaces.append(test_name_space)            
+            name_spaces.append(test_name_space)
+
+            test_name_space = "acme-{}".format(i)
+            create_namespace(cluster, test_name_space, log=log, cluster_type=cluster_type, kubeconfig=kubeconfig)
+
+            deploy_app_cmd = "kubectl --context {} -n {} apply -f {}".format(context, test_name_space, MORE_PODS_YAML)
+            if kubeconfig:
+                deploy_app_cmd = "kubectl --kubeconfig {} -n {} apply -f {}".format(kubeconfig, test_name_space, MORE_PODS_YAML)
+            deploy_app_cmd = "{}{}".format(JENKINS_KUBECTL_PREFIX, deploy_app_cmd)
+            rt, out, err = run_local_sh_cmd(deploy_app_cmd)
+            log.info("deploying acme app on {} rt {} out {} err {}.".format(deploy_app_cmd, rt, out, err))
+            assert rt == 0, "Failed deploying bookinfo app on {}, err {}".format(cluster, err)
+
+            ret = wait_for_pods_ready(cluster_name=cluster, context=context, namespace=test_name_space, num_pods=11, cluster_type=cluster_type, kubeconfig=kubeconfig)
+            if ret == 1:
+                del_namespace_v2(cluster, context, test_name_space, log, kubeconfig=kubeconfig)
+                log.info("cluster {} resource has been exhausted.".format(cluster))
+                return 0
+
             if cluster_type.upper() == 'EKS':
                 gateway_name = "bookinfo-gateway"
                 vs_name = "bookinfo"
@@ -83,7 +100,7 @@ def Run(args):
             cluster_list = []
             for i in range(int(clusters_per_tenant)):
                 cluster_name = "{}-{}".format(CLIENT_CLUSTER_PREFIX, i)
-                deploy_kind_cluster_cmd = "{}{} create cluster --name {} --config {}".format(JENKINS_KUBECTL_PREFIX, KIND_EXECUTION_PATH, cluster_name, KIND_CONFIG_FILE)
+                deploy_kind_cluster_cmd = "{}{}/kind create cluster --name {} --config {}".format(JENKINS_KUBECTL_PREFIX, os.getenv("WORKSPACE"), cluster_name, KIND_CONFIG_FILE)
                 args.log.info("Deploying kind cluster {}".format(deploy_kind_cluster_cmd))
                 rt, out, err = run_local_sh_cmd(deploy_kind_cluster_cmd)
                 args.log.info("kind cluster deploy out {} err {} rt {}".format(out, err, rt))
@@ -140,7 +157,7 @@ def Run(args):
 
                     cluster_type = 'ABC'
                     if cluster_type.upper() == 'KIND':
-                        delete_kind_cluster_cmd = "{}{} delete cluster --name {}".format(JENKINS_KUBECTL_PREFIX, KIND_EXECUTION_PATH, cluster)
+                        delete_kind_cluster_cmd = "{}{}/kind delete cluster --name {}".format(JENKINS_KUBECTL_PREFIX, os.getenv("WORKSPACE"), cluster)
                         rt, out, err = run_local_sh_cmd(delete_kind_cluster_cmd)
                         print("remove me {} type {} [cmd] {} rt {} out {} err {}".format(cluster, cluster_type.upper(), delete_kind_cluster_cmd,
                         rt, out, err))
