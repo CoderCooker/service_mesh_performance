@@ -45,6 +45,16 @@ class GraphQLClient(object):
             response = urllib.request.urlopen(req)
             return response.read().decode('utf-8')
         except urllib.error.HTTPError as e:
+            if 'Invalid token' in e.read():
+                cmd = 'curl -X POST https://console-stg.cloud.vmware.com/csp/gateway/am/api/auth/api-tokens/authorize?refresh_token={} | jq -r \'.access_token\''.format(self.token)
+                rt, out, err = run_local_sh_cmd(cmd)
+                assert rt == 0, "Failed updating expired token rt {}, err {}".format(rt, err)
+                access_token = out.strip()
+                self.inject_token(access_token, headername='csp-auth-token')
+
+                headers[self.headername] = '{}'.format(self.token)
+                response = urllib.request.urlopen(req)
+                return response.read().decode('utf-8')
             print((e.read()))
             print('')
             raise e
