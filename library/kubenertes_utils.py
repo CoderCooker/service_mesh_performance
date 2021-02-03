@@ -328,7 +328,7 @@ def prepare_cluster(client_cluster, log=None, cluster_type='EKS'):
 
 def wait_for_pods_ready_v2(cluster_name=None, context=None, namespace=None, statuses=["Running"], num_pods=None, cluster_type='KIND', kubeconfig=None):
     try:
-        end_time = time.time() + 240
+        end_time = time.time() + 1000
         period_in_seconds = 10
         while time.time() < end_time:
             cmd = "{}kubectl --context {} -n {} get pods | grep \"Running\" | wc -l".format(JENKINS_KUBECTL_PREFIX, context, namespace)
