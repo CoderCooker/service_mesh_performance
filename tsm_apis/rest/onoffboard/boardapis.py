@@ -138,7 +138,7 @@ def wait_for_cluster_ready(csp, client_cluster, log=None, kubeconfig=None):
         pass
 
     cluster_ready = False
-    count = 20
+    count = 100
     query = '''query getClusterStaus($name: String){root { inventory { clusters(name: $name) { name connected domains { name } } } } }'''
     variables = {"name":client_cluster}
     try:
