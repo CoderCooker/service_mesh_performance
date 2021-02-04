@@ -1,0 +1,68 @@
+int retrySlowQueries = 0
+def timeOutException = null
+def manualResultSet = null
+
+pipeline {
+
+    agent {
+        dockerfile {
+            filename 'Dockerfile'
+            args '--name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
+
+    options {
+        // do not allow concurrent builds to run if any job is in running state
+        disableConcurrentBuilds()
+        retry(2)
+    }
+
+    stages {
+
+        stage('Test GraphQL Queries') {
+            when {
+                anyOf {
+                    expression { "${manualResultSet}" == 'null' }
+                    expression { "${manualResultSet}" == 'FAILURE' && "${params.IS_RETRY_NEEDED}" == 'true' }
+                }
+            }
+
+            steps {
+                echo "result set in  post condition is ${manualResultSet}"
+                retry(4) {
+                    script {
+                        timeOutException = null
+                        timeout(time: 120, unit: 'MINUTES') {
+                           try{
+                                echo 'Test Slow Queries'
+                                sh 'python3.7 library/pyfra.py --tests-dir tsm_apis/graphql --log-dir . --debug'
+                            } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException e) {
+                                timeOutException = e
+                                retrySlowQueries = retrySlowQueries + 1
+                            }
+                        }
+                        if (retrySlowQueries > 0 && timeOutException != null) {
+                            echo "retrying testing slow queries :${retrySlowQueries}"
+                            sleep(100 * 2 + 200 * retrySlowQueries)
+                            error "Caught ${timeOutException.toString()}"
+                        }
+                    }
+
+                }
+            }
+        }
+
+        stage('Archive') {
+             when {
+                anyOf {
+                    expression {"${manualResultSet}"=='null'}
+                    expression {"${manualResultSet}"=='FAILURE' && "${params.IS_RETRY_NEEDED}" == 'true'}
+                }
+           }
+
+            steps {
+                archiveArtifacts artifacts: '**/*.log, **/*.json, **/*.csv, **/*.png'
+            }
+        }
+    }
+}
