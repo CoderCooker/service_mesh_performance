@@ -497,7 +497,7 @@ def Run(args):
     istio_install_count = 0.0
     uninstall_cls_count = 0.0
     istio_uninstall_count = 0.0
-    loop = "3"
+    loop = "2"
     while True:
         args.log.info("\nonoffboard Loop {}".format(i))
         args.log.info("onboard cluster {}.".format(cluster))
