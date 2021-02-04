@@ -79,7 +79,9 @@ def Run(args):
     loop = os.getenv("ITERATION")
     if len(loop) > 0:
         loop = int(loop.strip())
+        args.log.info("loop %s" % (loop))
     time_interval = os.getenv("TIME_INTERVAL")
+    args.log.info("time_interval %s "%(time_interval))
 
     csp = CSP(csp_token, log=args.log)
     graph_cli = GraphQLClient("{}/graphql".format(STAGING0_API_ENDPOINT))
