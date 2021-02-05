@@ -140,7 +140,7 @@ def Run(args):
                 args.log.info("install istio on cluster {}.".format(cluster))
                 istio(csp, cluster, 'install', log=args.log, cluster_type=cluster_type, kubeconfig=kubeconfig)
 
-            exhaust_cluster_resource(cluster, int(apps_per_cluster), log=args.log, cluster_type=cluster_type, kubeconfig=kubeconfig)
+                exhaust_cluster_resource(cluster, int(apps_per_cluster), log=args.log, cluster_type=cluster_type, kubeconfig=kubeconfig)
 
             if clean_up == 'true':
                 for cluster in clusters:
