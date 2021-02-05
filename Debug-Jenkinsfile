@@ -17,9 +17,12 @@ pipeline {
         }
 
         stage('Collect MeasureMent after the first 5 clusters.') {
-            node ('master'){
+            agent {
+                label "master"
+            }
             steps {
                 sh "echo 'hello from master'"
+                sh '/var/lib/jenkins/kind get clusters'
                 sh 'hostname'
                 sh 'free -mh'
                 sh 'df -mh'
