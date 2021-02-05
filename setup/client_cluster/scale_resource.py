@@ -133,7 +133,6 @@ def Run(args):
             else:
                 assert prepare_cluster(cluster, log=args.log, cluster_type=cluster_type) == 0, "Failed connecting {}".format(cluster)
 
-            onboard = 'true'
             if onboard == 'true':
                 args.log.info("onboard cluster {}.".format(cluster))
                 install_tenant_cluster(csp, cluster, log=args.log, cluster_type=cluster_type, kubeconfig=kubeconfig)
@@ -143,7 +142,6 @@ def Run(args):
 
             exhaust_cluster_resource(cluster, int(apps_per_cluster), log=args.log, cluster_type=cluster_type, kubeconfig=kubeconfig)
 
-            clean_up = 'false'
             if clean_up == 'true':
                 for cluster in clusters:
                     if(len(cluster)==0):
@@ -155,8 +153,8 @@ def Run(args):
                     args.log.info("offboard cluster {}.".format(cluster))
                     uninstall_tenant_cluster(csp, cluster, log=args.log, cluster_type=cluster_type, kubeconfig=kubeconfig)
 
-                    cluster_type = 'ABC'
                     if cluster_type.upper() == 'KIND':
+                        args.log.info("deleting kind cluster {}".format(cluster))
                         delete_kind_cluster_cmd = "{}{}/kind delete cluster --name {}".format(JENKINS_KUBECTL_PREFIX, os.getenv("WORKSPACE"), cluster)
                         rt, out, err = run_local_sh_cmd(delete_kind_cluster_cmd)
                         print("remove me {} type {} [cmd] {} rt {} out {} err {}".format(cluster, cluster_type.upper(), delete_kind_cluster_cmd,
