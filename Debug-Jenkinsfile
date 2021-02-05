@@ -10,8 +10,6 @@ pipeline {
                 sh "echo 'hello from kind-deployment-Slave1'"
                 sh 'hostname'
                 sh '/home/centos/workspace/exhaust-slave-0618PM/kind get clusters'
-                sh '/home/centos/workspace/exhaust-slave-0618PM/kind create cluster --name slave-1-cls-1 --config /home/centos/workspace/exhaust-slave-0618PM/kind.config'
-                sh '/home/centos/workspace/exhaust-slave-0618PM/kind get clusters'
                 sh 'free -mh'
                 sh 'df -mh'
                 sh 'pwd'
@@ -35,8 +33,6 @@ pipeline {
             }
             steps {
                 sh "echo 'hello from aws-slave-21'"
-                sh '/home/centos/workspace/exhaust-slave-21/kind get clusters'
-                sh '/home/centos/workspace/exhaust-slave-21/kind create cluster --name slave-21-cls-1 --config /home/centos/workspace/exhaust-slave-21/kind.config'
                 sh '/home/centos/workspace/exhaust-slave-21/kind get clusters'
                 sh 'hostname'
                 sh 'free -mh'
