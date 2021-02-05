@@ -18,6 +18,17 @@ pipeline {
             }
         }
 
+        stage('Collect MeasureMent after the first 5 clusters.') {
+            node ('master'){
+            steps {
+                sh "echo 'hello from master'"
+                sh 'hostname'
+                sh 'free -mh'
+                sh 'df -mh'
+            }
+            }
+        }
+
         stage('Test On aws-slave-21') {
             agent {
                 label "aws-slave-21"
