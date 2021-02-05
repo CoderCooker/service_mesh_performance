@@ -1,66 +1,30 @@
-int retrySlowQueries = 0
-def timeOutException = null
-def manualResultSet = null
-
 pipeline {
-
-    agent {
-        label "kind-deployment-Slave1"
-    }
-
-    options {
-        // do not allow concurrent builds to run if any job is in running state
-        disableConcurrentBuilds()
-        retry(2)
-    }
 
     stages {
 
-        stage('Running Job on slave one') {
-            when {
-                anyOf {
-                    expression { "${manualResultSet}" == 'null' }
-                    expression { "${manualResultSet}" == 'FAILURE' && "${params.IS_RETRY_NEEDED}" == 'true' }
-                }
+        stage('Test On kind-deployment-Slave1') {
+            agent {
+                label "kind-deployment-Slave1"
             }
-
             steps {
-                echo "testing different jobs on master"
-                retry(4) {
-                    script {
-                        timeOutException = null
-                        timeout(time: 120, unit: 'MINUTES') {
-                           try{
-                                sh 'whoami'
-                                sh 'hostname'
-                                sh 'pwd'
-                                sh 'free -mh'
-                            } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException e) {
-                                timeOutException = e
-                                retrySlowQueries = retrySlowQueries + 1
-                            }
-                        }
-                        if (retrySlowQueries > 0 && timeOutException != null) {
-                            echo "retrying testing slow queries :${retrySlowQueries}"
-                            sleep(100 * 2 + 200 * retrySlowQueries)
-                            error "Caught ${timeOutException.toString()}"
-                        }
-                    }
-
-                }
+                sh "echo 'hello from kind-deployment-Slave1'"
+                sh 'hostname'
+                sh 'free -mh'
+                sh 'df -mh'
+                sh 'pwd'
             }
         }
 
-        stage('Archive') {
-             when {
-                anyOf {
-                    expression {"${manualResultSet}"=='null'}
-                    expression {"${manualResultSet}"=='FAILURE' && "${params.IS_RETRY_NEEDED}" == 'true'}
-                }
-           }
-
+        stage('Test On aws-slave-21') {
+            agent {
+                label "aws-slave-21"
+            }
             steps {
-                archiveArtifacts artifacts: '**/*.log, **/*.json, **/*.csv, **/*.png'
+                sh "echo 'hello from aws-slave-21'"
+                sh 'hostname'
+                sh 'free -mh'
+                sh 'df -mh'
+                sh 'pwd'
             }
         }
     }
