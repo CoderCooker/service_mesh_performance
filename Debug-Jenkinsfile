@@ -27,7 +27,6 @@ pipeline {
                 sh 'free -mh'
                 sh 'df -mh'
             }
-            }
         }
 
         stage('Test On aws-slave-21') {
