@@ -279,7 +279,7 @@ def uninstall_tenant_cluster(csp, client_cluster_name, log=None, cluster_type='E
         cmd = "{}{}".format(JENKINS_KUBECTL_PREFIX, cmd)
         rt, out, err = run_local_sh_cmd(cmd)
         log.info("[cmd] {} rt {} out {} err {}".format(cmd, rt, out, err))
-        assert rt == 0, "Failed Deleting cluster components from {}, err {}".format(cluster, err)
+        assert rt == 0, "Failed Deleting cluster components from {}, err {}".format(client_cluster_name, err)
         assert wait_for_with_status(client_cluster_name, AGENT_NS, ['Running', 'Succeeded'], 0, 60, cluster_type=cluster_type, kubeconfig=kubeconfig) == 0
 
     except Exception as e:
