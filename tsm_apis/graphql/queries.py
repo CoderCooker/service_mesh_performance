@@ -85,6 +85,112 @@ def Run(args):
         graph_cli.inject_token(access_token, headername='csp-auth-token')
         pass
 
+
+    args.log.info("6th query")
+    for interval in time_interval:
+        inventory_cluster_nodetable = 'query GetNodeTable($cluster: String, $startTime: String, $endTime: String) {root {inventory {clusters(name: $cluster) {queryNodeTable (startTime: $startTime, endTime: $endTime) {data}}}}}'
+        variables = {
+            "startTime": '%s' % (time.time() - interval*60),
+            "endTime": '%s' % (time.time()),
+            "cluster": client_cluster
+        }
+        cost = 0
+        for x in range(0, loop):
+            cost += execute_query(graph_cli, inventory_cluster_nodetable, variables=variables, log=args.log)
+        cost = cost/loop
+        args.log.info("\n\nGRAPHQL  {}/{}------ {} seconds ------\n\n".format(inventory_cluster_nodetable, variables, cost))
+    args.log.info("\n\n")
+
+
+
+    args.log.info("7th query")
+    for interval in time_interval:
+        inventory_cluster_count = 'query GetClusterInventory {root {inventory {queryClusterInventoryCount(startTime: $startTime, endTime: $endTime, timeInterval: "10s") {data}}}}'
+        variables = {
+                    "startTime": '%s' % (time.time() - interval*60),
+                    "endTime": '%s' % (time.time())
+                    }
+        cost = 0
+        for x in range(0, loop):
+            cost += execute_query(graph_cli, inventory_cluster_nodetable, variables=variables, log=args.log)
+        cost = cost/loop
+        args.log.info("\n\nGRAPHQL  {}/{}------ {} seconds ------\n\n".format(inventory_cluster_nodetable, variables, cost))
+    args.log.info("\n\n")
+
+
+
+    args.log.info("8th query")
+    inventory_cluster_connection = 'query GetClusterConnection($cluster: String) {root {inventory {clusters(name: $cluster) {connected}}}}'
+    cost = 0
+    for x in range(0, loop):
+        cost += execute_query(graph_cli, inventory_cluster_nodetable, log=args.log)
+    cost = cost/loop
+    args.log.info("\n\nGRAPHQL  {}------ {} seconds ------\n\n".format(inventory_cluster_nodetable, cost))
+    args.log.info("\n\n")
+
+
+
+    args.log.info("9th query")
+    inventory_get_cluster = 'query GetClusterUUID($cluster: String) {root {inventory {clusters(name: $cluster) {uuid}}}}'
+    variables = {"cluster": client_cluster}
+    cost = 0
+    for x in range(0, loop):
+        cost += execute_query(graph_cli, inventory_get_cluster, variables=variables, log=args.log)
+    cost = cost/loop
+    args.log.info("\n\nGRAPHQL  {}------ {} seconds ------\n\n".format(inventory_get_cluster, cost))
+    args.log.info("\n\n")
+
+
+    args.log.info("10th query")
+    for interval in time_interval:
+        inventory_servicets_p50_latency = '{root{inventory{queryServiceTS(svcMetric: p50Latency, startTime: $startTime", endTime: $endTime, timeInterval:"1m") { data code } } } } '
+        variables = {
+                    "startTime": '%s' % (time.time() - interval*60),
+                    "endTime": '%s' % (time.time())
+                    }
+        cost = 0
+        for x in range(0, loop):
+            cost += execute_query(graph_cli, inventory_cluster_connection, variables=variables, log=args.log)
+        cost = cost/loop
+        args.log.info("\n\nGRAPHQL  {}------ {} seconds ------\n\n".format(inventory_cluster_connection, cost))
+
+
+
+    gns_config =  '''query ListGlobalNamespaces {root { config {globalNamespace {gns {name}}}}}'''
+    cost = 0
+    for x in range(0, loop):
+        cost += execute_query(graph_cli, gns_config, log=args.log)
+    cost = cost/loop
+    args.log.info("\n\nGRAPHQL  {}------ {} seconds ------\n\n".format(gns_config, cost))        
+
+
+
+    gns_details_query =  '''query GetGlobalNamespace($name: String) {root {config {globalNamespace {gns(name: $name) {
+   name description color domain caType  ca version matchingConditions }}}}}'''
+    variables = {"name": "0ev2pg"}
+    cost = 0
+    for x in range(0, loop):
+        cost += execute_query(graph_cli, gns_details_query, variables=variables, log=args.log)
+    cost = cost/loop
+    args.log.info("\n\nGRAPHQL  {}------ {} seconds ------\n\n".format(gns_details_query, cost)) 
+
+
+    for interval in time_interval:
+        gns_service_metrics = 'query FindServiceMetrics($gnsName: String, $startTime: String, $endTime: String) {root {config {globalNamespace {gns(name: $gnsName) {queryServiceInstanceTable(startTime: $startTime, endTime: $endTime) {data}}}}}}'
+        variables = {
+            "startTime": '%s' % (time.time() - interval * 60),
+            "endTime": '%s' % (time.time()),
+            "gnsName": '0ev2pg'
+        }
+        cost = 0
+        for x in range(0, loop):
+            cost += execute_query(graph_cli, gns_service_metrics, variables=variables, log=args.log)
+        cost = cost/loop
+        args.log.info("\n\nGRAPHQL  {}------ {} seconds ------\n\n".format(gns_service_metrics, cost))
+
+
+
+
     args.log.info("1st query")
     inventory_clusters = "{root{inventory{clusters{name}}}}"
     cost = 0
@@ -194,111 +300,11 @@ def Run(args):
             cost = 0
             for x in range(0, loop):
                 cost += execute_query(graph_cli, inventory_cluster_node_query, variables=variables, log=args.log)
-                args.log.info("loop {} cost {}".format(loop, cost))
+                args.log.info("loop {} cost {}".format(x, cost))
             cost = cost/loop
             args.log.info("\n\nGRAPHQL  interval{}/node_metric_type{}/{}/{}------ {} seconds ------\n\n".format(interval, node_metric_type, inventory_cluster_node_query, variables, cost))
     args.log.info("\n\n")
 
 
 
-    args.log.info("6th query")
-    for interval in time_interval:
-        inventory_cluster_nodetable = 'query GetNodeTable($cluster: String) {root {inventory {clusters(name: $cluster) {queryNodeTable($startTime: String, $endTime: String)(startTime: $startTime, endTime: $endTime) {data}}}}}'
-        variables = {
-            "startTime": '%s' % (time.time() - interval*60),
-            "endTime": '%s' % (time.time()),
-            "cluster": client_cluster
-        }
-        cost = 0
-        for x in range(0, loop):
-            cost += execute_query(graph_cli, inventory_cluster_nodetable, variables=variables, log=args.log)
-        cost = cost/loop
-        args.log.info("\n\nGRAPHQL  {}/{}------ {} seconds ------\n\n".format(inventory_cluster_nodetable, variables, cost))
-    args.log.info("\n\n")
 
-
-
-    args.log.info("7th query")
-    for interval in time_interval:
-        inventory_cluster_count = 'query GetClusterInventory {root {inventory {queryClusterInventoryCount(startTime: $startTime, endTime: $endTime, timeInterval: "10s") {data}}}}'
-        variables = {
-                    "startTime": '%s' % (time.time() - interval*60),
-                    "endTime": '%s' % (time.time())
-                    }
-        cost = 0
-        for x in range(0, loop):
-            cost += execute_query(graph_cli, inventory_cluster_nodetable, variables=variables, log=args.log)
-        cost = cost/loop
-        args.log.info("\n\nGRAPHQL  {}/{}------ {} seconds ------\n\n".format(inventory_cluster_nodetable, variables, cost))
-    args.log.info("\n\n")
-
-
-
-    args.log.info("8th query")
-    inventory_cluster_connection = 'query GetClusterConnection($cluster: String) {root {inventory {clusters(name: $cluster) {connected}}}}'
-    cost = 0
-    for x in range(0, loop):
-        cost += execute_query(graph_cli, inventory_cluster_nodetable, log=args.log)
-    cost = cost/loop
-    args.log.info("\n\nGRAPHQL  {}------ {} seconds ------\n\n".format(inventory_cluster_nodetable, cost))
-    args.log.info("\n\n")
-
-
-
-    args.log.info("9th query")
-    inventory_get_cluster = 'query GetClusterUUID($cluster: String) {root {inventory {clusters(name: $cluster) {uuid}}}}'
-    variables = {"cluster": client_cluster}
-    cost = 0
-    for x in range(0, loop):
-        cost += execute_query(graph_cli, inventory_get_cluster, variables=variables, log=args.log)
-    cost = cost/loop
-    args.log.info("\n\nGRAPHQL  {}------ {} seconds ------\n\n".format(inventory_get_cluster, cost))
-    args.log.info("\n\n")
-
-
-    args.log.info("10th query")
-    for interval in time_interval:
-        inventory_servicets_p50_latency = '{root{inventory{queryServiceTS(svcMetric: p50Latency, startTime: $startTime", endTime: $endTime, timeInterval:"1m") { data code } } } } '
-        variables = {
-                    "startTime": '%s' % (time.time() - interval*60),
-                    "endTime": '%s' % (time.time())
-                    }
-        cost = 0
-        for x in range(0, loop):
-            cost += execute_query(graph_cli, inventory_cluster_connection, variables=variables, log=args.log)
-        cost = cost/loop
-        args.log.info("\n\nGRAPHQL  {}------ {} seconds ------\n\n".format(inventory_cluster_connection, cost))
-
-
-
-    gns_config =  '''query ListGlobalNamespaces {root { config {globalNamespace {gns {name}}}}}'''
-    cost = 0
-    for x in range(0, loop):
-        cost += execute_query(graph_cli, gns_config, log=args.log)
-    cost = cost/loop
-    args.log.info("\n\nGRAPHQL  {}------ {} seconds ------\n\n".format(gns_config, cost))        
-
-
-
-    gns_details_query =  '''query GetGlobalNamespace($name: String) {root {config {globalNamespace {gns(name: $name) {
-   name description color domain caType  ca version matchingConditions }}}}}'''
-    variables = {"name": "0ev2pg"}
-    cost = 0
-    for x in range(0, loop):
-        cost += execute_query(graph_cli, gns_details_query, variables=variables, log=args.log)
-    cost = cost/loop
-    args.log.info("\n\nGRAPHQL  {}------ {} seconds ------\n\n".format(gns_details_query, cost)) 
-
-
-    for interval in time_interval:
-        gns_service_metrics = 'query FindServiceMetrics($gnsName: String, $startTime: String, $endTime: String) {root {config {globalNamespace {gns(name: $gnsName) {queryServiceInstanceTable(startTime: $startTime, endTime: $endTime) {data}}}}}}'
-        variables = {
-            "startTime": '%s' % (time.time() - interval * 60),
-            "endTime": '%s' % (time.time()),
-            "gnsName": '0ev2pg'
-        }
-        cost = 0
-        for x in range(0, loop):
-            cost += execute_query(graph_cli, gns_service_metrics, variables=variables, log=args.log)
-        cost = cost/loop
-        args.log.info("\n\nGRAPHQL  {}------ {} seconds ------\n\n".format(gns_service_metrics, cost))
