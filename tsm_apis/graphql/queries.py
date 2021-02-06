@@ -40,7 +40,6 @@ class GraphQLClient(object):
             headers[self.headername] = '{}'.format(self.token)
 
         req = urllib.request.Request(self.endpoint, json.dumps(data).encode('utf-8'), headers)
-
         try:
             response = urllib.request.urlopen(req)
             return response.read().decode('utf-8')
@@ -136,7 +135,7 @@ def Run(args):
         for x in range(0, loop):
             cost += execute_query(graph_cli, inventory_cluster_service_metrics, variables=variables, log=args.log)
         cost = cost/loop
-        args.log.info("\n\nGRAPHQL  {}/{}/{}------ {} seconds ------\n\n".format(inventory_cluster_service_metrics, variables, cost))
+        args.log.info("\n\nGRAPHQL  {}/{}------ {} seconds ------\n\n".format(inventory_cluster_service_metrics, variables, cost))
     args.log.info("\n\n")
 
     args.log.info("4th query")
@@ -157,7 +156,7 @@ def Run(args):
             for x in range(0, loop):
                 cost += execute_query(graph_cli, inventory_cluster_domain, variables=variables, log=args.log)
             cost = cost/loop
-            args.log.info("\n\nGRAPHQL  {}/{}/{}------ {} seconds ------\n\n".format(inventory_cluster_domain, variables, cost))
+            args.log.info("\n\nGRAPHQL  {}/{}------ {} seconds ------\n\n".format(inventory_cluster_domain, variables, cost))
     args.log.info("\n\n")
 
 
@@ -195,8 +194,9 @@ def Run(args):
             cost = 0
             for x in range(0, loop):
                 cost += execute_query(graph_cli, inventory_cluster_node_query, variables=variables, log=args.log)
+                args.log.info("cost %s".format(cost))
             cost = cost/loop
-            args.log.info("\n\nGRAPHQL  {}/{}------ {} seconds ------\n\n".format(inventory_cluster_node_query, variables, cost))
+            args.log.info("\n\nGRAPHQL  interval{}/node_metric_type{}/{}/{}------ {} seconds ------\n\n".format(interval, node_metric_type, inventory_cluster_node_query, variables, cost))
     args.log.info("\n\n")
 
 
