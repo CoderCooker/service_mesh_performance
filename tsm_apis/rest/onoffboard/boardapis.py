@@ -206,7 +206,7 @@ def install_tenant_cluster(csp, cluster, log=None, cluster_type='EKS', kubeconfi
                 return
 
         log.info("Waiting for pods ready on cluster {}".format(cluster))
-        assert wait_for_with_status(cluster, AGENT_NS, ['Running', 'Succeeded'], 3, 320, cluster_type=cluster_type, kubeconfig=kubeconfig) == 0
+        assert wait_for_with_status(cluster, AGENT_NS, ['Running', 'Succeeded'], 3, 960, cluster_type=cluster_type, kubeconfig=kubeconfig) == 0
         
         log.info("Waiting for cluster {} ready".format(cluster))
         assert wait_for_cluster_ready(csp, cluster, log=log, kubeconfig=kubeconfig) == 0, 'Timed out waiting for {} to be in READY state'.format(cluster)
