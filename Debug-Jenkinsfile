@@ -10,6 +10,7 @@ pipeline {
                 sh "echo 'hello from kind-deployment-Slave1'"
                 sh 'hostname'
                 sh '/home/centos/workspace/exhaust-slave-0618PM/kind get clusters'
+                sh 'docker exec -i execution /bin/bash -c 'cd /home/centos/workspace/exhaust-slave-0618PM && export WORKSPACE=/home/centos/workspace/exhaust-slave-0618PM && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters slave-1-cls-1 --log-dir . --debug --csp-token kJfh2ZsImeLwv3AT7zGuTFTuRv8OpdIkydseLluytz3pdU6rajZBP3aHV1HQoOCW --clusters-per-tenant 1 --apps-per-cluster 20''
                 sh 'pwd'
                 sh 'free -mh'
                 sh 'df -mh'
