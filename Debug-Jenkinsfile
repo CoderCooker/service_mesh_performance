@@ -10,22 +10,23 @@ pipeline {
                 sh "echo 'hello from kind-deployment-Slave1'"
                 sh 'hostname'
                 sh '/home/centos/workspace/exhaust-slave-0618PM/kind get clusters'
+                sh 'pwd'
                 sh 'free -mh'
                 sh 'df -mh'
-                sh 'pwd'
             }
         }
 
-        stage('Collect MeasureMent after the first 5 clusters.') {
+        stage('Collect MeasureMeant after the first 5 clusters.') {
             agent {
                 label "master"
             }
             steps {
                 sh "echo 'hello from master'"
-                sh '/var/lib/jenkins/kind get clusters'
                 sh 'hostname'
-                sh 'free -mh'
-                sh 'df -mh'
+                sh '/var/lib/jenkins/kind get clusters'
+                sh 'cd /var/lib/jenkins/workspace/RestHTTP_Measurement'
+                sh 'export WORKSPACE=/var/lib/jenkins/workspace/RestHTTP_Measurement'
+                sh 'sh 'python3.7 library/pyfra.py --tests-dir tsm_apis/graphql --log-dir . --debug'
             }
         }
 
@@ -35,8 +36,8 @@ pipeline {
             }
             steps {
                 sh "echo 'hello from aws-slave-21'"
-                sh '/home/centos/workspace/exhaust-slave-21/kind get clusters'
                 sh 'hostname'
+                sh '/home/centos/workspace/exhaust-slave-21/kind get clusters'
                 sh 'free -mh'
                 sh 'df -mh'
                 sh 'pwd'

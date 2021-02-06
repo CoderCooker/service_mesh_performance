@@ -1,0 +1,101 @@
+int retryPrometheus = 0
+int retrySingleGNS = 0
+def timeOutException = null
+def manualResultSet = null
+
+pipeline {
+
+    agent {
+        dockerfile {
+            filename 'Dockerfile'
+            args '--volume-driver=nfs --privileged -v /var/lib/jenkins:/var/lib/jenkins'
+        }
+    }
+
+    options {
+        // do not allow concurrent builds to run if any job is in running state
+        disableConcurrentBuilds()
+        retry(2)
+    }
+
+    stages {
+
+        stage('Configure Prometheus') {
+            when {
+                anyOf {
+                    expression { "${manualResultSet}" == 'null' }
+                    expression { "${manualResultSet}" == 'FAILURE' && "${params.IS_RETRY_NEEDED}" == 'true' }
+                }
+            }
+
+            steps {
+                echo "result set in  post condition is ${manualResultSet}"
+                retry(2) {
+                    script {
+                        timeOutException = null
+                        timeout(time: 30, unit: 'MINUTES') {
+                           try{
+                                echo 'Test Prometheus Configuration'
+                                sh 'python3.7 library/pyfra.py --tests-dir prometheus --log-dir . --client-cluster $SINGLE_CLUSTER --debug'
+                            } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException e) {
+                                timeOutException = e
+                                retryPrometheus = retryPrometheus + 1
+                            }
+                        }
+                        if (retryPrometheus > 0 && timeOutException != null) {
+                            echo "retrying installing prometheus stage :${retryPrometheus}"
+                            sleep(60 * 1 + 30 * retryPrometheus)
+                            error "Caught ${timeOutException.toString()}"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('GNS within Single Cluster') {
+            when {
+                anyOf {
+                    expression { "${manualResultSet}" == 'null' }
+                    expression { "${manualResultSet}" == 'FAILURE' && "${params.IS_RETRY_NEEDED}" == 'true' }
+                }
+            }
+
+            steps {
+                echo "result set in  post condition is ${manualResultSet}"
+                retry(4) {
+                    script {
+                        timeOutException = null
+                        timeout(time: 300, unit: 'MINUTES') {
+                           try{
+                                echo 'Test GNS Configuration'
+                                sh 'python3.7 library/pyfra.py --tests-dir istio/data_plane/single_cluster --log-dir . --debug --cluster $SINGLE_CLUSTER --csp-token $CSP_TOKEN --protocol-mode $PROTO_MODE_HTTP'
+                            } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException e) {
+                                timeOutException = e
+                                retrySingleGNS = retrySingleGNS + 1
+                            }
+                        }
+                        if (retrySingleGNS > 0 && timeOutException != null) {
+                            echo "retrying testing single GNS :${retrySingleGNS}"
+                            sleep(100 * 2 + 200 * retrySingleGNS)
+                            error "Caught ${timeOutException.toString()}"
+                        }
+                    }
+
+                }
+            }
+        }
+
+        stage('Archive') {
+             when {
+                anyOf {
+                    expression {"${manualResultSet}"=='null'}
+                    expression {"${manualResultSet}"=='FAILURE' && "${params.IS_RETRY_NEEDED}" == 'true'}
+                }
+           }
+
+            steps {
+                archiveArtifacts artifacts: '**/*.log, **/*.json, **/*.csv, **/*.png'
+            }
+        }
+    }
+}

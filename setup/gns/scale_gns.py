@@ -25,8 +25,7 @@ def deploy_config(cluster, namespace, i, log=args.log):
 def Run(args):
     args.log.info("start testing %s"%(args.shortName))
     clusters = os.getenv("CLUSTERS") if os.getenv("CLUSTERS") else args.opts.clusterLists
-    gns_config = args.opts.gnsConfig
-    csp_token = args.opts.cspToken
+    csp_token = os.getenv("CSP_TOKEN") if os.getenv("CSP_TOKEN") else args.opts.cspToken
     cluster_type = os.getenv("CLUSTER_TYPE") if os.getenv("CLUSTER_TYPE") else args.opts.clusterType
     onboard = os.getenv("ON_BOARD") if os.getenv("ON_BOARD") else args.opts.onBoard
     csp = CSP(csp_token, log=args.log)
