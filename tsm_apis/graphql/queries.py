@@ -194,7 +194,7 @@ def Run(args):
             cost = 0
             for x in range(0, loop):
                 cost += execute_query(graph_cli, inventory_cluster_node_query, variables=variables, log=args.log)
-                args.log.info("cost %s".format(cost))
+                args.log.info("loop {} cost {}".format(loop, cost))
             cost = cost/loop
             args.log.info("\n\nGRAPHQL  interval{}/node_metric_type{}/{}/{}------ {} seconds ------\n\n".format(interval, node_metric_type, inventory_cluster_node_query, variables, cost))
     args.log.info("\n\n")
@@ -203,7 +203,7 @@ def Run(args):
 
     args.log.info("6th query")
     for interval in time_interval:
-        inventory_cluster_nodetable = 'query GetNodeTable($cluster: String) {root {inventory {clusters(name: $cluster) {queryNodeTable(startTime: $startTime, endTime: $endTime) {data}}}}}'
+        inventory_cluster_nodetable = 'query GetNodeTable($cluster: String) {root {inventory {clusters(name: $cluster) {queryNodeTable($startTime: String, $endTime: String)(startTime: $startTime, endTime: $endTime) {data}}}}}'
         variables = {
             "startTime": '%s' % (time.time() - interval*60),
             "endTime": '%s' % (time.time()),
