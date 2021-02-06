@@ -481,7 +481,7 @@ def deinit_tenant_cluster(csp, cluster, log=None, cluster_type='EKS', kubeconfig
 def Run(args):
     args.log.info("start testing %s"%(args.shortName))
     cluster = args.opts.singleCluster
-    csp_token = args.opts.cspToken
+    csp_token = os.getenv("CSP_TOKEN") if os.getenv("CSP_TOKEN") else args.opts.cspToken
     cluster_type = os.getenv("CLUSTER_TYPE") if os.getenv("CLUSTER_TYPE") else args.opts.clusterType
     loop = os.getenv("RestHTTP_ITERATION") if os.getenv("RestHTTP_ITERATION") else args.opts.iterationNumber
 
