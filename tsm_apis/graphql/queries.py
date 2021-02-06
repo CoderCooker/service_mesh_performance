@@ -149,26 +149,26 @@ def Run(args):
         args.log.info("\n\nGRAPHQL  {}/{}/{}------ {} seconds ------\n\n".format(inventory_cluster_service_metrics, variables, cost))
     args.log.info("\n\n")
 
-args.log.info("4th query")
-for interval in time_interval:
-    for service_metric_types in ServiceMetricTypes:
-        inventory_cluster_domain = '''query FindServiceMetrics($metric: ServiceMetricTypeEnum $cluster: String $domain: String $service: String $startTime: String $endTime: String) 
-    {root {inventory {clusters(name: $cluster) {domains(name: $domain) {name services(name: $service) {name queryServiceTS(svcMetric: $metric, startTime: $startTime, endTime: $endTime, timeInterval: "10s") {data} serviceDeployments { serviceInstances { nodeName }}}}
-    queryServiceTS(svcMetric: $metric, startTime: $startTime, endTime: $endTime, timeInterval: "10s") {data}}}}}'''
-        variables = {
-            "metric": service_metric_types,
-            "startTime": '%s' % (time.time() - interval * 60),
-            "endTime": '%s' % (time.time()),
-            "cluster": client_cluster,
-            "domain": "gns-2ns-sc.local",
-            "service": "fortioserver"
-        }
-        cost = 0
-        for x in range(0, loop):
-            cost += execute_query(graph_cli, inventory_cluster_domain, variables=variables, log=args.log)
-        cost = cost/loop
-        args.log.info("\n\nGRAPHQL  {}/{}/{}------ {} seconds ------\n\n".format(inventory_cluster_domain, variables, cost))
-args.log.info("\n\n")
+    args.log.info("4th query")
+    for interval in time_interval:
+        for service_metric_types in ServiceMetricTypes:
+            inventory_cluster_domain = '''query FindServiceMetrics($metric: ServiceMetricTypeEnum $cluster: String $domain: String $service: String $startTime: String $endTime: String) 
+        {root {inventory {clusters(name: $cluster) {domains(name: $domain) {name services(name: $service) {name queryServiceTS(svcMetric: $metric, startTime: $startTime, endTime: $endTime, timeInterval: "10s") {data} serviceDeployments { serviceInstances { nodeName }}}}
+        queryServiceTS(svcMetric: $metric, startTime: $startTime, endTime: $endTime, timeInterval: "10s") {data}}}}}'''
+            variables = {
+                "metric": service_metric_types,
+                "startTime": '%s' % (time.time() - interval * 60),
+                "endTime": '%s' % (time.time()),
+                "cluster": client_cluster,
+                "domain": "gns-2ns-sc.local",
+                "service": "fortioserver"
+            }
+            cost = 0
+            for x in range(0, loop):
+                cost += execute_query(graph_cli, inventory_cluster_domain, variables=variables, log=args.log)
+            cost = cost/loop
+            args.log.info("\n\nGRAPHQL  {}/{}/{}------ {} seconds ------\n\n".format(inventory_cluster_domain, variables, cost))
+    args.log.info("\n\n")
 
 
 
