@@ -484,6 +484,7 @@ def Run(args):
     csp_token = os.getenv("CSP_TOKEN") if os.getenv("CSP_TOKEN") else args.opts.cspToken
     cluster_type = os.getenv("CLUSTER_TYPE") if os.getenv("CLUSTER_TYPE") else args.opts.clusterType
     loop = os.getenv("RestHTTP_ITERATION") if os.getenv("RestHTTP_ITERATION") else args.opts.iterationNumber
+    args.log.info("token {} cluster_type {} loop {}".format(csp_token, cluster_type, loop))
 
     kubeconfig = None
     if cluster_type.upper() == 'KIND':
