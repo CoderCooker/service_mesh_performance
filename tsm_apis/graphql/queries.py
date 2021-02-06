@@ -216,7 +216,7 @@ def Run(args):
         inventory_cluster_nodetable = 'query GetNodeTable($cluster: String) {root {inventory {clusters(name: $cluster) {queryNodeTable(startTime: $startTime, endTime: $endTime) {data}}}}}'
         variables = {
             "startTime": '%s' % (time.time() - interval*60),
-            "endTime": '%s' % (time.time())
+            "endTime": '%s' % (time.time()),
             "cluster": client_cluster
         }
         cost = 0
