@@ -36,24 +36,6 @@ def exhaust_cluster_resource(cluster, apps_per_cluster, log=None, cluster_type='
     name_spaces = []
     while i <= apps_per_cluster:
         try:
-            # test_name_space = "jimin-{}".format(i)
-            # create_namespace(cluster, test_name_space, log=log, cluster_type=cluster_type, kubeconfig=kubeconfig)
-
-            # deploy_app_cmd = "kubectl --context {} -n {} apply -f {}".format(context, test_name_space, SCALE_UP_APP_YAML)
-            # if kubeconfig:
-            #     deploy_app_cmd = "kubectl --kubeconfig {} -n {} apply -f {}".format(kubeconfig, test_name_space, SCALE_UP_APP_YAML)
-            # deploy_app_cmd = "{}{}".format(JENKINS_KUBECTL_PREFIX, deploy_app_cmd)
-            # rt, out, err = run_local_sh_cmd(deploy_app_cmd)
-            # log.info("deploying bookinfo app on {} rt {} out {} err {}.".format(deploy_app_cmd, rt, out, err))
-            # assert rt == 0, "Failed deploying bookinfo app on {}, err {}".format(cluster, err)
-
-            # ret = wait_for_pods_ready(cluster_name=cluster, context=context, namespace=test_name_space, num_pods=6, cluster_type=cluster_type, kubeconfig=kubeconfig)
-            # if ret == 1:
-            #     del_namespace_v2(cluster, context, test_name_space, log, kubeconfig=kubeconfig)
-            #     log.info("cluster {} resource has been exhausted.".format(cluster))
-            #     return 0
-            #name_spaces.append(test_name_space)
-
             test_name_space = "acme-{}".format(i)
             create_namespace(cluster, test_name_space, log=log, cluster_type=cluster_type, kubeconfig=kubeconfig)
 

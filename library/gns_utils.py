@@ -107,7 +107,7 @@ class GNS(object):
 
     def delete_pvs(self, gns, fqdn):
         headers = {'csp-auth-token': self.csp.get_access_token()}
-        del_url = 'https://staging-2.servicemesh.biz/tsm/v1alpha1/global-namespaces/{}/public-service/tsm-perf-http-pub-svc-{}.servicemesh.biz'.format(gns, fqdn)
+        del_url = 'https://staging-0.servicemesh.biz/tsm/v1alpha1/global-namespaces/{}/public-service/tsm-perf-http-pub-svc-{}.servicemesh.biz'.format(gns, fqdn)
         try:
             resp = request(del_url,
                           operation='DELETE',
