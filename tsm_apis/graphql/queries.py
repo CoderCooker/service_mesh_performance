@@ -286,7 +286,7 @@ def Run(args):
     args.log.info("12nd query")
     gns_details_query =  '''query GetGlobalNamespace($name: String) {root {config {globalNamespace {gns(name: $name) {
    name description color domain caType  ca version matchingConditions }}}}}'''
-    variables = {"name": "0ev2pg"}
+    variables = {"name": "f93krq"}
     cost = 0
     for x in range(0, loop):
         cost += execute_query(graph_cli, gns_details_query, variables=variables, log=args.log)
@@ -300,7 +300,7 @@ def Run(args):
         variables = {
             "startTime": '%s' % (time.time() - interval * 60),
             "endTime": '%s' % (time.time()),
-            "gnsName": '0ev2pg'
+            "gnsName": 'f93krq'
         }
         cost = 0
         for x in range(0, loop):
