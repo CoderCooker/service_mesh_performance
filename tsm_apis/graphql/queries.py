@@ -308,3 +308,9 @@ def Run(args):
         cost = cost/loop
         args.log.info("\nGRAPHQL  {}-- the past {} mins ------ {} seconds ------\n".format(gns_service_metrics, interval, cost))
     args.log.info("\n\n")
+
+
+
+    # suspicious queries
+    # {"operationName":"clusterTopology","variables":{"startTime":"now() - 5m","endTime":"now()","showGateways":true,"noMetrics":true},"query":
+    # "query clusterTopology($startTime: String, $endTime: String, $showGateways: Boolean, $noMetrics: Boolean) {root {config {clusters {clusters {name labels __typename }__typename}__typename}inventory {queryClusterTable(startTime: $startTime endTime: $endTime noMetrics: $noMetrics ) {data __typename} ServiceTable: queryServiceTable(startTime: $startTime endTime: $endTime ShowGateways: $showGateways noMetrics: $noMetrics) {data __typename}clusters {name queryServiceTopology(startTime: $startTime, endTime: $endTime) {data __typename}__typename}__typename}__typename}}"
