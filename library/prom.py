@@ -49,7 +49,7 @@ def calculate_average(item, resource_type):
         return to_mega_bytes(data_avg)
 
 
-def get_average_within_query_time_range(data, resource_type):
+def get_average_within_query_time_range(data, resource_type, srv_name=None):
     val_by_pod_name = {"fortioclient": 0, "fortioserver": 0, "istio-ingressgateway": 0}
     if data["data"]["result"]:
         for item in data["data"]["result"]:
@@ -62,17 +62,13 @@ def get_average_within_query_time_range(data, resource_type):
                 val_by_pod_name["istio-ingressgateway"] = calculate_average(item, resource_type)
     return val_by_pod_name
 
-def get_average_within_query_time_range_2(data, resource_type):
-    val_by_pod_name = {"stream-proxy-v1.0.7-555757bcfd-g9xs7": 0, "global-namespace-v1.0.18-5fcdfb4785-wfhtq": 0, "query-manager-v0.2.14-9cbcf6467-tm7nm": 0}
+def get_average_within_query_time_range_2(data, resource_type, srv_name):
+    val_by_pod_name = {}
     if data["data"]["result"]:
         for item in data["data"]["result"]:
-            pod_name = item["metric"]["pod"]
-            if "stream-proxy-v1.0.7-555757bcfd-g9xs7" in pod_name:
-                val_by_pod_name["stream-proxy-v1.0.7-555757bcfd-g9xs7"] = calculate_average(item, resource_type)
-            if "global-namespace-v1.0.18-5fcdfb4785-wfhtq" in pod_name:
-                val_by_pod_name["global-namespace-v1.0.18-5fcdfb4785-wfhtq"] = calculate_average(item, resource_type)
-            if "query-manager-v0.2.14-9cbcf6467-tm7nm" in pod_name:
-                val_by_pod_name["query-manager-v0.2.14-9cbcf6467-tm7nm"] = calculate_average(item, resource_type)
+            val_by_pod_name[srv_name] = calculate_average(item, resource_type)
+    else:
+        raise Exception("failed collecting cpu/mem metrics for {}".format(srv_name))
     return val_by_pod_name
 
 
@@ -102,9 +98,9 @@ class Prom:
             self.headers["Host"] = host
         self.aggregate = aggregate
 
+    # sample query /api/v1/query_range?query=up&start=2021-02-12T16:48:30.781Z&end=2021-02-12T16:58:00.781Z&step=15s
     def fetch_by_query(self, query):
-        print("url {} query {} start {} end {} ".format(self.url + "/api/v1/query_range",
-        query, self.start, self.end))
+        print("{}?query={}&start={}&end={}&step=15".format(self.url + "/api/v1/query_range", query, self.start, self.end))
         resp = requests.get(self.url + "/api/v1/query_range", {
             "query": query,
             "start": self.start,
@@ -158,35 +154,31 @@ class Prom:
         return out
 
 
-    def fetch_tsm_services_cpu_and_mem(self):
+    def fetch_tsm_services_cpu_and_mem(self, name_space, srv_names):
         out = {}
-
-        avg_cpu_dict = self.fetch_tsm_cpu_usage_by_pod_name()
-        if "stream-filter-backend-v2.3.39-65c58f4954-mcqtd" in avg_cpu_dict:
-            out["cpu_mili_avg_sfb"] = avg_cpu_dict["stream-filter-backend-v2.3.39-65c58f4954-mcqtd"]
-        
-
-        avg_mem_dict = self.fetch_tsm_memory_usage_by_pod_name()
-        if "stream-filter-backend-v2.3.39-65c58f4954-mcqtd" in avg_mem_dict:
-            out["mem_Mi_avg_stream-filter-backend"] = avg_mem_dict["stream-filter-backend-v2.3.39-65c58f4954-mcqtd"]
-
+        for srv_name in srv_names:
+            avg_cpu_dict = self.fetch_tsm_cpu_usage_by_pod_name(srv_name=srv_name, name_space=name_space)
+            out["cpu_mili_{}".format(srv_name)] = avg_cpu_dict[srv_name]
+            avg_mem_dict = self.fetch_tsm_memory_usage_by_pod_name(srv_name=srv_name, name_space=name_space)
+            out["mem_Mi_avg_{}".format(srv_name)] = avg_mem_dict[srv_name]
         return out
 
-    def fetch_tsm_cpu_usage_by_pod_name(self, pod_name=None):
-        # container usage
-        cpu_query = 'sum(rate(container_cpu_usage_seconds_total{job="kubernetes-cadvisor",container="istio-proxy", namespace="3cd92ae5-2a1e-4c65-88e8-c653aa1e6f55"}[1m])) by (pod)'
-        #cpu_query = 'container_cpu_usage_seconds_total{image!="", namespace="3cd92ae5-2a1e-4c65-88e8-c653aa1e6f55", container_name="global-namespace"}'
+    def fetch_tsm_cpu_usage_by_pod_name(self, srv_name=None, name_space=None):
+        cpu_query = 'sum(rate(container_cpu_usage_seconds_total{image!="", namespace="3cd92ae5-2a1e-4c65-88e8-c653aa1e6f55", container="cluster-lifecycle-manager"}[1m])) by (pod)'
         data = self.fetch_by_query(cpu_query)
-        avg_cpu_dict = get_average_within_query_time_range_2(data, "cpu")
-        print(avg_cpu_dict)
+        print("\n\n\n cpu usage data {}".format(data))
+        avg_cpu_dict = get_average_within_query_time_range_2(data, "cpu", srv_name)
+        print("avg cpu dict {}".format(avg_cpu_dict))
         
         return avg_cpu_dict
     
 
-    def fetch_tsm_memory_usage_by_pod_name(self, pod_name=None):
-       mem_query = 'container_memory_usage_bytes{job = "kubernetes-cadvisor", container="istio-proxy"}'
+    def fetch_tsm_memory_usage_by_pod_name(self, srv_name=None, name_space=None):
+       #mem_query = 'container_memory_usage_bytes{job = "kubernetes-cadvisor", container="istio-proxy"}'
+       mem_query = 'container_memory_usage_bytes{job = "kubernetes-cadvisor", namespace="3cd92ae5-2a1e-4c65-88e8-c653aa1e6f55", container="cluster-lifecycle-manager"}'
        data = self.fetch_by_query(mem_query)
-       avg_mem_dict = get_average_within_query_time_range_2(data, "mem")
+       print("\n\n\n memory usage data {}".format(data))
+       avg_mem_dict = get_average_within_query_time_range_2(data, "mem", srv_name)
        return avg_mem_dict
 
 

@@ -12,19 +12,26 @@ from datetime import datetime
 
 def Run(args):
     args.log.info("start testing %s"%(args.shortName))
-    loop = os.getenv("DURATION")
-    promUrl = "http://a4e24f8fde22743679762714c65e805a-255532553.us-west-2.elb.amazonaws.com:80"
-    sd = datetime.now()
-    prom_start = calendar.timegm(sd.utctimetuple()) + METRICS_START_SKIP_DURATION
-    duration = 
-    p = prom.Prom(promUrl, duration, start=prom_start)
+    cluster = os.getenv("CLUSTER") if os.getenv("CLUSTER") else args.opts.singleCluster
+    duration = os.getenv("TEST_DURATION") if os.getenv("TEST_DURATION") else args.opts.testDuration
+    service_names = os.getenv("SERVICE_NAMES") if os.getenv("SERVICE_NAMES") else args.opts.serviceNames
+    name_space = os.getenv("NAME_SPACE") if os.getenv("NAME_SPACE") else args.opts.nameSpace
+
+    context = "{}/{}".format(AWS_EKS_DESC, cluster)
+    promUrl = get_service_loadbalancer(context, ISTIO_NAMESPACE, ISTIO_INGRESSGATEWAY, log=args.log)
+    promUrl = "http://{}".format(promUrl)
+    duration = 60 * int(duration.strip())
+    args.log.info("prom url {} test used time {}".format(promUrl, duration))
+
+    p = prom.Prom(promUrl, duration)
     try:
-        prom_metrics = p.fetch_tsm_services_cpu_and_mem()
+        service_names = service_names.split(",")
+        prom_metrics = p.fetch_tsm_services_cpu_and_mem(name_space, service_names)
         if not prom_metrics:
             print("... Not found")
             raise
         else:
-            print("metrics -- ")
+            print("\n\n cpu/memory metrics -- {}".format(prom_metrics))
             print("")
     except Exception as e:
         traceback.format_exc()

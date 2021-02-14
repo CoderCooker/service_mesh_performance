@@ -75,10 +75,17 @@ class Config(object):
         rt_group.add_argument("--protocol-mode", dest='protocolMode', metavar='GRPC|HTTP|TCP',
         action='store', help="using which protocol loading tests.")
 
-        rt_group.add_argument("--graph_type", dest='graphType', metavar='latency-p50, latency-p90, latency-p99, latency-p999, cpu-client, cpu-server, mem-client, mem-server',
-        action='store', help="data type")
-        rt_group.add_argument("--x_axis", dest='xAxis', metavar='qps or conn',
-        action='store', help="xaxis type")
+        rt_group.add_argument("--test-duration", dest='testDuration', action='store', help="the past test time that collecting SaaS control plane cpu/memory")
+        rt_group.add_argument("--name-space", dest='nameSpace', action='store', help="name space")
+        rt_group.add_argument("--service-names", dest='serviceNames', action='store', help="service names that is collected cpu/memory,\
+            allspark-ca, avi-connector, aws-connector, cluster-lifecycle-manager, etcd, etcd-client, etcd-restore-operator, external-resource-manager,\
+                global-namespace, local-api-gateway, prtc, prtc-api, query-manager, resource-group-manager, stream-filter-backend, stream-proxy, tenant-api-gw,\
+                timescaledb")
+
+
+        rt_group.add_argument("--graph_type", dest='graphType', metavar='latency-p50, latency-p90, latency-p99, latency-p999, cpu-client, cpu-server, mem-client, mem-server', action='store', help="data type")
+
+        rt_group.add_argument("--x_axis", dest='xAxis', metavar='qps or conn',action='store', help="xaxis type")
         rt_group.add_argument("--telemetry_modes", dest='telemetryModes', metavar='none_mtls_baseline, none_mtls_both, v2-sd-full-nullvm_both, v2-stats-nullvm_both, v2-stats-wasm_both, v2-sd-nologging-nullvm_both',
         action='store', help="This is a list of perf test labels, currently it can be any combinations from the follow supported modes")
         rt_group.add_argument("--query_list", dest='queryList', metavar='conn_query_list=[2, 4, 8, 16, 32, 64], qps_query_list=[10, 100, 200, 400, 800, 1000]',
