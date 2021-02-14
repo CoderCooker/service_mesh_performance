@@ -164,7 +164,7 @@ class Prom:
         return out
 
     def fetch_tsm_cpu_usage_by_pod_name(self, srv_name=None, name_space=None):
-        cpu_query = 'sum(rate(container_cpu_usage_seconds_total{image!="", namespace="3cd92ae5-2a1e-4c65-88e8-c653aa1e6f55", container="cluster-lifecycle-manager"}[1m])) by (pod)'
+        cpu_query = 'sum(rate(container_cpu_usage_seconds_total{image!="", namespace="%s", container="%s"}[1m])) by (pod)' % (name_space, srv_name)
         data = self.fetch_by_query(cpu_query)
         print("\n\n\n cpu usage data {}".format(data))
         avg_cpu_dict = get_average_within_query_time_range_2(data, "cpu", srv_name)
@@ -175,7 +175,7 @@ class Prom:
 
     def fetch_tsm_memory_usage_by_pod_name(self, srv_name=None, name_space=None):
        #mem_query = 'container_memory_usage_bytes{job = "kubernetes-cadvisor", container="istio-proxy"}'
-       mem_query = 'container_memory_usage_bytes{job = "kubernetes-cadvisor", namespace="3cd92ae5-2a1e-4c65-88e8-c653aa1e6f55", container="cluster-lifecycle-manager"}'
+       mem_query = 'container_memory_usage_bytes{job = "kubernetes-cadvisor", namespace="%s", container_name="%s"}' % (name_space, srv_name)
        data = self.fetch_by_query(mem_query)
        print("\n\n\n memory usage data {}".format(data))
        avg_mem_dict = get_average_within_query_time_range_2(data, "mem", srv_name)
