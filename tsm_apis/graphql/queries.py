@@ -158,7 +158,7 @@ def Run(args):
             for x in range(0, loop):
                 cost += execute_query(graph_cli, inventory_cluster_domain, variables=variables, log=args.log)
             cost = cost/loop
-            args.log.info("\nGRAPHQL  {}---{}-- the past {} mins ------ {} seconds ------\n".format(inventory_cluster_domain, service_metric_types, interval, cost))
+            args.log.info("\nGRAPHQL  {}---metric_type {}-- the past {} mins ------ {} seconds ------\n".format(inventory_cluster_domain, service_metric_types, interval, cost))
     args.log.info("\n\n")
 
 
