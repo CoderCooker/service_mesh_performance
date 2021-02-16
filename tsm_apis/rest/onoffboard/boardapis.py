@@ -484,6 +484,7 @@ def Run(args):
     csp_token = os.getenv("CSP_TOKEN") if os.getenv("CSP_TOKEN") else args.opts.cspToken
     cluster_type = os.getenv("CLUSTER_TYPE") if os.getenv("CLUSTER_TYPE") else args.opts.clusterType
     loop = os.getenv("RestHTTP_ITERATION") if os.getenv("RestHTTP_ITERATION") else args.opts.iterationNumber
+    loop = int(loop.strip())
     args.log.info("token {} cluster_type {} loop {}".format(csp_token, cluster_type, loop))
 
     kubeconfig = None
@@ -498,7 +499,6 @@ def Run(args):
     istio_install_count = 0.0
     uninstall_cls_count = 0.0
     istio_uninstall_count = 0.0
-    loop = "2"
     while True:
         args.log.info("\nonoffboard Loop {}".format(i))
         args.log.info("onboard cluster {}.".format(cluster))

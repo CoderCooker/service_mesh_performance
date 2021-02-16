@@ -140,7 +140,7 @@ def Run(args):
         args.log.info("\nGRAPHQL  {}-- the past {} mins ------ {} seconds ------\n".format(inventory_cluster_service_metrics, interval, cost))
     args.log.info("\n\n")
 
-    args.log.info("4th query")
+    args.log.info("5th query")
     for interval in time_interval:
         for service_metric_types in ServiceMetricTypes:
             inventory_cluster_domain = '''query FindServiceMetrics($metric: ServiceMetricTypeEnum $cluster: String $domain: String $service: String $startTime: String $endTime: String) 
@@ -163,7 +163,7 @@ def Run(args):
 
 
 
-    args.log.info("4th query")
+    args.log.info("6th query")
     for interval in time_interval:
         inventory_service_topology = '''query FindServiceTopology($cluster: String $domain: String $service: String $startTime: String $endTime: String) {
     root {inventory {clusters(name: $cluster) {name domains(name: $domain) {name services(name: $service) {name queryServiceTopology(startTime: $startTime, endTime: $endTime) {data}}}}}}}'''
@@ -182,7 +182,7 @@ def Run(args):
     args.log.info("\n\n")
 
 
-    args.log.info("5th query")
+    args.log.info("7th query")
     for interval in time_interval:
         for node_metric_type in NodeMetricTypes :
             inventory_cluster_node_query = '''query FindClusterNodesMetrics($metric: NodeMetricTypeEnum $cluster: String $startTime: String $endTime: String)
@@ -203,7 +203,7 @@ def Run(args):
 
 
 
-    args.log.info("6th query")
+    args.log.info("8th query")
     for interval in time_interval:
         inventory_cluster_nodetable = 'query GetNodeTable($cluster: String, $startTime: String, $endTime: String) {root {inventory {clusters(name: $cluster) {queryNodeTable (startTime: $startTime, endTime: $endTime) {data}}}}}'
         variables = {
@@ -220,7 +220,7 @@ def Run(args):
 
 
 
-    args.log.info("7th query")
+    args.log.info("10th query")
     for interval in time_interval:
         inventory_cluster_count = 'query GetClusterInventory {root {inventory {queryClusterInventoryCount(startTime: $startTime, endTime: $endTime, timeInterval: "10s") {data}}}}'
         variables = {
@@ -236,7 +236,7 @@ def Run(args):
 
 
 
-    args.log.info("8th query")
+    args.log.info("11th query")
     inventory_cluster_connection = 'query GetClusterConnection($cluster: String) {root {inventory {clusters(name: $cluster) {connected}}}}'
     cost = 0
     for x in range(0, loop):
@@ -247,7 +247,7 @@ def Run(args):
 
 
 
-    args.log.info("9th query")
+    args.log.info("12nd query")
     inventory_get_cluster = 'query GetClusterUUID($cluster: String) {root {inventory {clusters(name: $cluster) {uuid}}}}'
     variables = {"cluster": client_cluster}
     cost = 0
@@ -258,7 +258,7 @@ def Run(args):
     args.log.info("\n\n")
 
 
-    args.log.info("10th query")
+    args.log.info("13rd query")
     for interval in time_interval:
         inventory_servicets_p50_latency = '{root{inventory{queryServiceTS(svcMetric: p50Latency, startTime: $startTime", endTime: $endTime, timeInterval:"1m") { data code } } } } '
         variables = {
@@ -273,7 +273,7 @@ def Run(args):
     args.log.info("\n\n")
 
 
-    args.log.info("11th query")
+    args.log.info("14th query")
     gns_config =  '''query ListGlobalNamespaces {root { config {globalNamespace {gns {name}}}}}'''
     cost = 0
     for x in range(0, loop):
@@ -283,7 +283,7 @@ def Run(args):
     args.log.info("\n\n")     
 
 
-    args.log.info("12nd query")
+    args.log.info("15th query")
     gns_details_query =  '''query GetGlobalNamespace($name: String) {root {config {globalNamespace {gns(name: $name) {
    name description color domain caType  ca version matchingConditions }}}}}'''
     variables = {"name": "f93krq"}
@@ -294,7 +294,7 @@ def Run(args):
     args.log.info("\nGRAPHQL  {}------ {} seconds ------\n".format(gns_details_query, cost)) 
     args.log.info("\n\n")
 
-    args.log.info("13rd query")
+    args.log.info("16th query")
     for interval in time_interval:
         gns_service_metrics = 'query FindServiceMetrics($gnsName: String, $startTime: String, $endTime: String) {root {config {globalNamespace {gns(name: $gnsName) {queryServiceInstanceTable(startTime: $startTime, endTime: $endTime) {data}}}}}}'
         variables = {

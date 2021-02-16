@@ -78,7 +78,7 @@ class Config(object):
         rt_group.add_argument("--test-duration", dest='testDuration', action='store', help="the past test time that collecting SaaS control plane cpu/memory")
         rt_group.add_argument("--name-space", dest='nameSpace', action='store', help="name space")
         rt_group.add_argument("--service-names", dest='serviceNames', action='store', help="service names that is collected cpu/memory,\
-            allspark-ca, avi-connector, aws-connector, cluster-lifecycle-manager, etcd, etcd-client, etcd-restore-operator, external-resource-manager,\
+            allspark-ca, avi-connector, aws-connector, cluster-lifecycle-manager, etcd, etcd-restore-operator, external-resource-manager,\
                 global-namespace, local-api-gateway, prtc, prtc-api, query-manager, resource-group-manager, stream-filter-backend, stream-proxy, tenant-api-gw,\
                 timescaledb")
 
