@@ -516,11 +516,11 @@ def Run(args):
         args.log.info("offboard cluster {}.".format(cluster))
         cost = uninstall_tenant_cluster(csp, cluster, log=args.log, cluster_type=cluster_type, kubeconfig=kubeconfig)
         uninstall_cls_count += cost
-        if i > int(loop.strip()):
+        if i >= loop:
             break
         i += 1
     
-    count = int(loop.strip()) + 1
+    count = loop
     args.log.info("cluster create cost {}".format(install_cls_count/count))
     args.log.info("cluster delete cost {}".format(uninstall_cls_count/count))
     args.log.info("istio install cost {}".format(istio_install_count/count))
