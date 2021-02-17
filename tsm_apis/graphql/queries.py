@@ -105,7 +105,7 @@ def Run(args):
     inventory_clusters_serviceinstance = 'query FindServiceInstances($cluster: String, $namespace: String) {root {inventory {clusters(name: $cluster) {domains(name: $namespace) {serviceInstances {name nodeName}}}}}}'
     variables = {
   	 	"cluster": client_cluster,
-        "namespace": 'istio-system'
+        "namespace": 'vmware-system-tsm'
 	 }
     cost = 0
     for x in range(0, loop):
