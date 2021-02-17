@@ -343,7 +343,7 @@ def Run(args):
     try:
         fd = os.open("graphql_measurement.json", os.O_RDWR|os.O_CREAT)
         out = os.fdopen(fd, "wt")
-        # print("dump test results {}".format(json.dumps(test_results)))
+        print("dump test results {}".format(json.dumps(test_results)))
         out.write(json.dumps(test_results) + "\n")
         out.close()
     except Exception:
