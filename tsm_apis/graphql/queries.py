@@ -130,7 +130,7 @@ def Run(args):
             args.log.info("loop {} x {} cost {}".format(loop, x, cost))
         cost = cost/loop
         args.log.info("\nGRAPHQL  {}-- the past {} mins------ {} seconds ------\n".format(inventory_table, interval, cost))
-        test_results[inventory_table + '::'+ str(interval) + "mins"] = cost
+        test_results["clusterInventoryTable::"+ str(interval) + "mins"] = cost
     args.log.info("\n\n")
     
     args.log.info("4th query")
@@ -147,7 +147,7 @@ def Run(args):
             args.log.info("loop {} x {} cost {}".format(loop, x, cost))
         cost = cost/loop
         args.log.info("\nGRAPHQL  {}-- the past {} mins ------ {} seconds ------\n".format(inventory_cluster_service_metrics, interval, cost))
-        test_results[inventory_cluster_service_metrics + '::'+ str(interval) + "mins"] = cost
+        test_results['FindServiceMetrics::inventory::'+ str(interval) + "mins"] = cost
     args.log.info("\n\n")
 
     args.log.info("5th query")
@@ -170,7 +170,7 @@ def Run(args):
                 args.log.info("loop {} x {} cost {}".format(loop, x, cost))
             cost = cost/loop
             args.log.info("\nGRAPHQL  {}---metric_type {}-- the past {} mins ------ {} seconds ------\n".format(inventory_cluster_domain, service_metric_types, interval, cost))
-            test_results[inventory_cluster_domain + "::"+ service_metric_types + '::'+ str(interval) + "mins"] = cost
+            test_results["FindServiceMetrics::"+ service_metric_types + '::'+ str(interval) + "mins"] = cost
     args.log.info("\n\n")
 
 
@@ -182,7 +182,7 @@ def Run(args):
         variables = {
             "startTime": '%s' % (time.time() - interval * 60),
             "endTime": '%s' % (time.time()),
-            "cluster": client_cluster,
+            "cluster": "dd-cl3-dev-st",
             "domain": "gns-2ns-sc.local",
             "service": "fortioserver"
         }
@@ -192,7 +192,7 @@ def Run(args):
             args.log.info("loop {} x {} cost {}".format(loop, x, cost))
         cost = cost/loop
         args.log.info("\nGRAPHQL  {}-- the past {} mins------ {} seconds ------\n".format(inventory_service_topology, interval, cost))
-        test_results[inventory_service_topology + '::'+ str(interval) + "mins"] = cost
+        test_results['FindServiceTopology::'+ str(interval) + "mins"] = cost
     args.log.info("\n\n")
 
 
@@ -213,7 +213,7 @@ def Run(args):
                 args.log.info("loop {} x {} cost {}".format(loop, x, cost))
             cost = cost/loop
             args.log.info("\nGRAPHQL  interval{}/node_metric_type{}/{}/{}------ {} seconds ------\n".format(interval, node_metric_type, inventory_cluster_node_query, variables, cost))
-            test_results[str(interval) + '::'+ node_metric_type + "::" + inventory_cluster_node_query] = cost
+            test_results['FindClusterNodesMetrics::'+ node_metric_type + "::" + str(interval) + "mins"] = cost
     args.log.info("\n\n")
 
 
@@ -232,7 +232,7 @@ def Run(args):
             args.log.info("loop {} x {} cost {}".format(loop, x, cost))
         cost = cost/loop
         args.log.info("\nGRAPHQL  {}--the past {} mins ------ cost {} seconds ------\n".format(inventory_cluster_nodetable, interval, cost))
-        test_results[inventory_cluster_nodetable + '::'+ str(interval)] = cost
+        test_results['GetNodeTable::'+ str(interval) + "mins"] = cost
     args.log.info("\n\n")
 
 
@@ -250,7 +250,7 @@ def Run(args):
             args.log.info("loop {} x {} cost {}".format(loop, x, cost))
         cost = cost/loop
         args.log.info("\nGRAPHQL  {} --the past {} mins ------ cost {} seconds ------\n".format(inventory_cluster_nodetable, interval, cost))
-        test_results[inventory_cluster_nodetable + '::'+ str(interval)] = cost
+        test_results['GetClusterInventory::'+ str(interval) + "mins"] = cost
     args.log.info("\n\n")
 
 
@@ -263,7 +263,7 @@ def Run(args):
         args.log.info("loop {} x {} cost {}".format(loop, x, cost))
     cost = cost/loop
     args.log.info("\nGRAPHQL  {}------ {} seconds ------\n".format(inventory_cluster_nodetable, cost))
-    test_results[inventory_cluster_nodetable] = cost
+    test_results["GetClusterConnection"] = cost
     args.log.info("\n\n")
 
 
@@ -277,13 +277,13 @@ def Run(args):
         args.log.info("loop {} x {} cost {}".format(loop, x, cost))
     cost = cost/loop
     args.log.info("\nGRAPHQL  {}------ {} seconds ------\n".format(inventory_get_cluster, cost))
-    test_results[inventory_get_cluster] = cost
+    test_results["GetClusterUUID"] = cost
     args.log.info("\n\n")
 
 
     args.log.info("13rd query")
     for interval in time_interval:
-        inventory_servicets_p50_latency = '{root{inventory{queryServiceTS(svcMetric: p50Latency, startTime: $startTime", endTime: $endTime, timeInterval:"1m") { data code } } } } '
+        inventory_servicets_p50_latency = 'query {root{inventory{queryServiceTS(svcMetric: p50Latency, startTime: $startTime", endTime: $endTime, timeInterval:"1m") { data code } } } } '
         variables = {
                     "startTime": '%s' % (time.time() - interval * 60),
                     "endTime": '%s' % (time.time())
@@ -294,7 +294,7 @@ def Run(args):
             args.log.info("loop {} x {} cost {}".format(loop, x, cost))
         cost = cost/loop
         args.log.info("\nGRAPHQL  {} -- the past {} mins ------ {} seconds ------\n".format(inventory_cluster_connection, interval, cost))
-        test_results[inventory_cluster_connection] = cost
+        test_results["queryServiceTS"] = cost
     args.log.info("\n\n")
 
 
@@ -306,7 +306,7 @@ def Run(args):
         args.log.info("loop {} x {} cost {}".format(loop, x, cost))
     cost = cost/loop
     args.log.info("\n\GRAPHQL  {}------ {} seconds ------\n".format(gns_config, cost))
-    test_results[gns_config] = cost
+    test_results["ListGlobalNamespaces"] = cost
     args.log.info("\n\n")     
 
 
@@ -320,7 +320,7 @@ def Run(args):
         args.log.info("loop {} x {} cost {}".format(loop, x, cost))
     cost = cost/loop
     args.log.info("\nGRAPHQL  {}------ {} seconds ------\n".format(gns_details_query, cost)) 
-    test_results[gns_details_query] = cost
+    test_results["GetGlobalNamespace"] = cost
     args.log.info("\n\n")
 
     args.log.info("16th query")
@@ -336,14 +336,14 @@ def Run(args):
             cost += execute_query(graph_cli, gns_service_metrics, variables=variables, log=args.log)
             args.log.info("loop {} x {} cost {}".format(loop, x, cost))
         cost = cost/loop
-        test_results[gns_service_metrics + "::" + str(interval)] = cost
+        test_results["FindServiceMetrics::globalNamespace::" + str(interval) + "mins"] = cost
         args.log.info("\nGRAPHQL  {}-- the past {} mins ------ {} seconds ------\n".format(gns_service_metrics, interval, cost))
     args.log.info("\n\n")
 
     try:
         fd = os.open("graphql_measurement.json", os.O_RDWR|os.O_CREAT)
         out = os.fdopen(fd, "wt")
-        print("dump test results {}".format(json.dumps(test_results)))
+        print("graphql measurement results {}".format(json.dumps(test_results)))
         out.write(json.dumps(test_results) + "\n")
         out.close()
     except Exception:

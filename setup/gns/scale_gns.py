@@ -52,3 +52,10 @@ def Run(args):
         i += 1
         if i > 3:
             break
+
+    # domain_name = "gns-2ns-sc.local"
+    # csp_token = "OgyamW2imj6L2CKRq7RcLj4ag9S2AZXrRdBCNj02XY11r8daNXWIY9egDi9bMFw6"
+    # cluster_type = "KIND"
+    # gns_config_dict = dict()
+    # gns_config_dict["dd-cl3-dev-st"] = ["fortioclient","fortioserver"]
+    # config_gns(csp_token, gns_dict=gns_config_dict, domain_name=domain_name, log=args.log)

@@ -33,7 +33,7 @@ def psv_apis(client_cluster, gns, log=None):
        fqdn= "tsm-perf-create-http-pub-svc-{}.servicemesh.biz".format(name)
        resp = gns.create_psv(name, fqdn, psv_config)
        
-       #gns.delete_pvs(name, fqdn)
+       gns.delete_pvs(name, fqdn)
     except Exception as e:
         traceback.format_exc()
         raise     
