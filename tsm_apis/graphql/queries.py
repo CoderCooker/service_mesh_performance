@@ -97,18 +97,18 @@ def Run(args):
     args.log.info("\n\n")
     
 
-    args.log.info("2nd query")
-    inventory_clusters_serviceinstance = 'query FindServiceInstances($cluster: String, $namespace: String) {root {inventory {clusters(name: $cluster) {domains(name: $namespace) {serviceInstances {name nodeName}}}}}}'
-    variables = {
-  	 	"cluster": client_cluster,
-        "namespace": 'istio-system'
-	 }
-    cost = 0
-    for x in range(0, loop):
-        cost += execute_query(graph_cli, inventory_clusters_serviceinstance,log=args.log)
-    cost = cost/loop
-    args.log.info("\nGRAPHQL  {}------ {} seconds ------\n".format(inventory_clusters_serviceinstance, cost))
-    args.log.info("\n\n")
+    # args.log.info("2nd query")
+    # inventory_clusters_serviceinstance = 'query FindServiceInstances($cluster: String, $namespace: String) {root {inventory {clusters(name: $cluster) {domains(name: $namespace) {serviceInstances {name nodeName}}}}}}'
+    # variables = {
+  	#  	"cluster": client_cluster,
+    #     "namespace": 'istio-system'
+	#  }
+    # cost = 0
+    # for x in range(0, loop):
+    #     cost += execute_query(graph_cli, inventory_clusters_serviceinstance,log=args.log)
+    # cost = cost/loop
+    # args.log.info("\nGRAPHQL  {}------ {} seconds ------\n".format(inventory_clusters_serviceinstance, cost))
+    # args.log.info("\n\n")
 
 
     args.log.info("3rd query")
