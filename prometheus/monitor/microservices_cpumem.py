@@ -35,7 +35,7 @@ def Run(args):
         else:
             print("\n\n cpu/memory metrics -- {}".format(prom_metrics))
             file_path = "/var/lib/jenkins/workspace/%s" % (os.getenv("JOB_NAME"))
-            fd = os.open("{}cpu_memory.json".format(file_path), os.O_RDWR|os.O_CREAT)
+            fd = os.open("{}/cpu_memory.json".format(file_path), os.O_RDWR|os.O_CREAT)
             out = os.fdopen(fd, "wt")
             # print("dump test results {}".format(json.dumps(test_results)))
             out.write(json.dumps(prom_metrics) + "\n")
