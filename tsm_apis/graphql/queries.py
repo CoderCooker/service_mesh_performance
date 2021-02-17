@@ -69,9 +69,11 @@ def Run(args):
     if len(loop) > 0:
         loop = int(loop.strip())
         args.log.info("loop %s" % (loop))
+    args.log.info("client cluster {} CSP_TOKEN {} ITERATION {}".format(client_cluster, csp_token, loop))
     time_interval = os.getenv("TIME_INTERVAL")
     args.log.info("time_interval %s "%(time_interval))
     time_interval = [5, 15, 30, 60]
+    test_results = {}
 
     csp = CSP(csp_token, log=args.log)
     graph_cli = GraphQLClient("{}/graphql".format(STAGING0_API_ENDPOINT))
@@ -92,23 +94,27 @@ def Run(args):
     cost = 0
     for x in range(0, loop):
         cost += execute_query(graph_cli, inventory_clusters,log=args.log)
+        args.log.info("loop {} x {} cost {} ".format(loop, x, cost))
     cost = cost/loop
     args.log.info("\n GRAPHQL  {}------ {} seconds ------\n".format(inventory_clusters, cost))
+    test_results[inventory_clusters] = cost
     args.log.info("\n\n")
     
 
-    # args.log.info("2nd query")
-    # inventory_clusters_serviceinstance = 'query FindServiceInstances($cluster: String, $namespace: String) {root {inventory {clusters(name: $cluster) {domains(name: $namespace) {serviceInstances {name nodeName}}}}}}'
-    # variables = {
-  	#  	"cluster": client_cluster,
-    #     "namespace": 'istio-system'
-	#  }
-    # cost = 0
-    # for x in range(0, loop):
-    #     cost += execute_query(graph_cli, inventory_clusters_serviceinstance,log=args.log)
-    # cost = cost/loop
-    # args.log.info("\nGRAPHQL  {}------ {} seconds ------\n".format(inventory_clusters_serviceinstance, cost))
-    # args.log.info("\n\n")
+    args.log.info("2nd query")
+    inventory_clusters_serviceinstance = 'query FindServiceInstances($cluster: String, $namespace: String) {root {inventory {clusters(name: $cluster) {domains(name: $namespace) {serviceInstances {name nodeName}}}}}}'
+    variables = {
+  	 	"cluster": client_cluster,
+        "namespace": 'istio-system'
+	 }
+    cost = 0
+    for x in range(0, loop):
+        cost += execute_query(graph_cli, inventory_clusters_serviceinstance,log=args.log)
+        args.log.info("loop {} x {} cost {} ".format(loop, x, cost))
+    cost = cost/loop
+    args.log.info("\nGRAPHQL  {}------ {} seconds ------\n".format(inventory_clusters_serviceinstance, cost))
+    test_results[inventory_clusters_serviceinstance] = cost
+    args.log.info("\n\n")
 
 
     args.log.info("3rd query")
@@ -121,8 +127,10 @@ def Run(args):
         cost = 0
         for x in range(0, loop):
             cost += execute_query(graph_cli, inventory_table, variables=variables, log=args.log)
+            args.log.info("loop {} x {} cost {}".format(loop, x, cost))
         cost = cost/loop
         args.log.info("\nGRAPHQL  {}-- the past {} mins------ {} seconds ------\n".format(inventory_table, interval, cost))
+        test_results[inventory_table + '::'+ str(interval) + "mins"] = cost
     args.log.info("\n\n")
     
     args.log.info("4th query")
@@ -136,8 +144,10 @@ def Run(args):
         cost = 0
         for x in range(0, loop):
             cost += execute_query(graph_cli, inventory_cluster_service_metrics, variables=variables, log=args.log)
+            args.log.info("loop {} x {} cost {}".format(loop, x, cost))
         cost = cost/loop
         args.log.info("\nGRAPHQL  {}-- the past {} mins ------ {} seconds ------\n".format(inventory_cluster_service_metrics, interval, cost))
+        test_results[inventory_cluster_service_metrics + '::'+ str(interval) + "mins"] = cost
     args.log.info("\n\n")
 
     args.log.info("5th query")
@@ -157,8 +167,10 @@ def Run(args):
             cost = 0
             for x in range(0, loop):
                 cost += execute_query(graph_cli, inventory_cluster_domain, variables=variables, log=args.log)
+                args.log.info("loop {} x {} cost {}".format(loop, x, cost))
             cost = cost/loop
             args.log.info("\nGRAPHQL  {}---metric_type {}-- the past {} mins ------ {} seconds ------\n".format(inventory_cluster_domain, service_metric_types, interval, cost))
+            test_results[inventory_cluster_domain + "::"+ service_metric_types + '::'+ str(interval) + "mins"] = cost
     args.log.info("\n\n")
 
 
@@ -177,8 +189,10 @@ def Run(args):
         cost = 0
         for x in range(0, loop):
             cost += execute_query(graph_cli, inventory_service_topology, variables=variables, log=args.log)
+            args.log.info("loop {} x {} cost {}".format(loop, x, cost))
         cost = cost/loop
         args.log.info("\nGRAPHQL  {}-- the past {} mins------ {} seconds ------\n".format(inventory_service_topology, interval, cost))
+        test_results[inventory_service_topology + '::'+ str(interval) + "mins"] = cost
     args.log.info("\n\n")
 
 
@@ -196,9 +210,10 @@ def Run(args):
             cost = 0
             for x in range(0, loop):
                 cost += execute_query(graph_cli, inventory_cluster_node_query, variables=variables, log=args.log)
-                args.log.info("loop {} cost {}".format(x, cost))
+                args.log.info("loop {} x {} cost {}".format(loop, x, cost))
             cost = cost/loop
             args.log.info("\nGRAPHQL  interval{}/node_metric_type{}/{}/{}------ {} seconds ------\n".format(interval, node_metric_type, inventory_cluster_node_query, variables, cost))
+            test_results[str(interval) + '::'+ node_metric_type + "::" + inventory_cluster_node_query] = cost
     args.log.info("\n\n")
 
 
@@ -214,8 +229,10 @@ def Run(args):
         cost = 0
         for x in range(0, loop):
             cost += execute_query(graph_cli, inventory_cluster_nodetable, variables=variables, log=args.log)
+            args.log.info("loop {} x {} cost {}".format(loop, x, cost))
         cost = cost/loop
         args.log.info("\nGRAPHQL  {}--the past {} mins ------ cost {} seconds ------\n".format(inventory_cluster_nodetable, interval, cost))
+        test_results[inventory_cluster_nodetable + '::'+ str(interval)] = cost
     args.log.info("\n\n")
 
 
@@ -230,8 +247,10 @@ def Run(args):
         cost = 0
         for x in range(0, loop):
             cost += execute_query(graph_cli, inventory_cluster_nodetable, variables=variables, log=args.log)
+            args.log.info("loop {} x {} cost {}".format(loop, x, cost))
         cost = cost/loop
         args.log.info("\nGRAPHQL  {} --the past {} mins ------ cost {} seconds ------\n".format(inventory_cluster_nodetable, interval, cost))
+        test_results[inventory_cluster_nodetable + '::'+ str(interval)] = cost
     args.log.info("\n\n")
 
 
@@ -241,8 +260,10 @@ def Run(args):
     cost = 0
     for x in range(0, loop):
         cost += execute_query(graph_cli, inventory_cluster_nodetable, log=args.log)
+        args.log.info("loop {} x {} cost {}".format(loop, x, cost))
     cost = cost/loop
     args.log.info("\nGRAPHQL  {}------ {} seconds ------\n".format(inventory_cluster_nodetable, cost))
+    test_results[inventory_cluster_nodetable] = cost
     args.log.info("\n\n")
 
 
@@ -253,8 +274,10 @@ def Run(args):
     cost = 0
     for x in range(0, loop):
         cost += execute_query(graph_cli, inventory_get_cluster, variables=variables, log=args.log)
+        args.log.info("loop {} x {} cost {}".format(loop, x, cost))
     cost = cost/loop
     args.log.info("\nGRAPHQL  {}------ {} seconds ------\n".format(inventory_get_cluster, cost))
+    test_results[inventory_get_cluster] = cost
     args.log.info("\n\n")
 
 
@@ -268,8 +291,10 @@ def Run(args):
         cost = 0
         for x in range(0, loop):
             cost += execute_query(graph_cli, inventory_cluster_connection, variables=variables, log=args.log)
+            args.log.info("loop {} x {} cost {}".format(loop, x, cost))
         cost = cost/loop
         args.log.info("\nGRAPHQL  {} -- the past {} mins ------ {} seconds ------\n".format(inventory_cluster_connection, interval, cost))
+        test_results[inventory_cluster_connection] = cost
     args.log.info("\n\n")
 
 
@@ -278,8 +303,10 @@ def Run(args):
     cost = 0
     for x in range(0, loop):
         cost += execute_query(graph_cli, gns_config, log=args.log)
+        args.log.info("loop {} x {} cost {}".format(loop, x, cost))
     cost = cost/loop
     args.log.info("\n\GRAPHQL  {}------ {} seconds ------\n".format(gns_config, cost))
+    test_results[gns_config] = cost
     args.log.info("\n\n")     
 
 
@@ -290,8 +317,10 @@ def Run(args):
     cost = 0
     for x in range(0, loop):
         cost += execute_query(graph_cli, gns_details_query, variables=variables, log=args.log)
+        args.log.info("loop {} x {} cost {}".format(loop, x, cost))
     cost = cost/loop
     args.log.info("\nGRAPHQL  {}------ {} seconds ------\n".format(gns_details_query, cost)) 
+    test_results[gns_details_query] = cost
     args.log.info("\n\n")
 
     args.log.info("16th query")
@@ -305,12 +334,17 @@ def Run(args):
         cost = 0
         for x in range(0, loop):
             cost += execute_query(graph_cli, gns_service_metrics, variables=variables, log=args.log)
+            args.log.info("loop {} x {} cost {}".format(loop, x, cost))
         cost = cost/loop
+        test_results[gns_service_metrics + "::" + str(interval)] = cost
         args.log.info("\nGRAPHQL  {}-- the past {} mins ------ {} seconds ------\n".format(gns_service_metrics, interval, cost))
     args.log.info("\n\n")
 
-
-
-    # suspicious queries
-    # {"operationName":"clusterTopology","variables":{"startTime":"now() - 5m","endTime":"now()","showGateways":true,"noMetrics":true},"query":
-    # "query clusterTopology($startTime: String, $endTime: String, $showGateways: Boolean, $noMetrics: Boolean) {root {config {clusters {clusters {name labels __typename }__typename}__typename}inventory {queryClusterTable(startTime: $startTime endTime: $endTime noMetrics: $noMetrics ) {data __typename} ServiceTable: queryServiceTable(startTime: $startTime endTime: $endTime ShowGateways: $showGateways noMetrics: $noMetrics) {data __typename}clusters {name queryServiceTopology(startTime: $startTime, endTime: $endTime) {data __typename}__typename}__typename}__typename}}"
+    try:
+        fd = os.open("graphql_measurement.json", os.O_RDWR|os.O_CREAT)
+        out = os.fdopen(fd, "wt")
+        # print("dump test results {}".format(json.dumps(test_results)))
+        out.write(json.dumps(test_results) + "\n")
+        out.close()
+    except Exception:
+        raise "failed dumping data into graphql_measurement.json"
