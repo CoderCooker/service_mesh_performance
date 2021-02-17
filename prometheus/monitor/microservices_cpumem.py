@@ -7,6 +7,7 @@
 
 from library.prom import *
 from library.fortio import *
+from library.kubenertes_utils import *
 from datetime import datetime
 
 
@@ -17,6 +18,7 @@ def Run(args):
     service_names = os.getenv("SERVICE_NAMES") if os.getenv("SERVICE_NAMES") else args.opts.serviceNames
     name_space = os.getenv("NAME_SPACE") if os.getenv("NAME_SPACE") else args.opts.nameSpace
 
+    prepare_cluster(cluster, log=args.log) == 0, "Failed connecting {}".format(cluster)
     context = "{}/{}".format(AWS_EKS_DESC, cluster)
     promUrl = get_service_loadbalancer(context, ISTIO_NAMESPACE, ISTIO_INGRESSGATEWAY, log=args.log)
     promUrl = "http://{}".format(promUrl)
