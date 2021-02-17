@@ -461,7 +461,8 @@ def deinit_tenant_cluster(csp, cluster, log=None, cluster_type='EKS', kubeconfig
             context = "{}/{}".format(AWS_EKS_DESC, cluster)
         elif cluster_type.upper()=='KIND':
             context = "kind-{}".format(cluster)
-            return check_istio_v2(csp, cluster, log=None, cluster_type=cluster_type, context=context, kubeconfig=kubeconfig)
+            check_istio_v2(csp, cluster, log=None, cluster_type=cluster_type, context=context, kubeconfig=kubeconfig)
+            return cost
 
         config.load_kube_config(context=context)
         v1 = client.CoreV1Api()
@@ -494,7 +495,7 @@ def Run(args):
         assert prepare_cluster(cluster, log=args.log, cluster_type=cluster_type) == 0, "Failed connecting {}".format(cluster)
     csp = CSP(csp_token, log=args.log)
 
-    i = 0
+    i = 1
     install_cls_count = 0.0
     istio_install_count = 0.0
     uninstall_cls_count = 0.0
