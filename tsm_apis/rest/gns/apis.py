@@ -61,7 +61,7 @@ def Run(args):
     gns = GNS(csp_token, log=args.log)
     client_cluster = os.getenv("CLUSTER") if os.getenv("CLUSTER") else args.opts.singleCluster
     cluster_type = os.getenv("CLUSTER_TYPE") if os.getenv("CLUSTER_TYPE") else args.opts.clusterType
-    assert prepare_cluster(client_cluster, log=args.log, cluster_type=cluster_type) == 0, "Failed connecting {}".format(cluster)
+    assert prepare_cluster(client_cluster, log=args.log, cluster_type=cluster_type) == 0, "Failed connecting {}".format(client_cluster)
 
     gns_apis(client_cluster, gns, log=args.log)
-    psv_apis(client_cluster, gns, log=args.log)
+    #psv_apis(client_cluster, gns, log=args.log)
