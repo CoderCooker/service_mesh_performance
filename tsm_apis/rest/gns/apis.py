@@ -57,7 +57,7 @@ def gns_apis(client_cluster, gns, log=None):
 
 def Run(args):
     args.log.info("start testing %s"%(args.shortName))
-    csp_token = args.opts.cspToken
+    csp_token = os.getenv("CSP_TOKEN") if os.getenv("CSP_TOKEN") else args.opts.cspToken
     gns = GNS(csp_token, log=args.log)
     client_cluster = os.getenv("CLUSTER") if os.getenv("CLUSTER") else args.opts.singleCluster
     cluster_type = os.getenv("CLUSTER_TYPE") if os.getenv("CLUSTER_TYPE") else args.opts.clusterType
