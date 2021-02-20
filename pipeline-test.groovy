@@ -1,8 +1,6 @@
 #!/usr/bin/env groovy
 
-dir('subDir') {
-    checkout scm
-}
+
 
 def nodes = [:]
 
@@ -12,6 +10,9 @@ nodesByLabel('cls-10s').each {
       stage("preparation@${it}") {
         //println it
         sh('hostname')
+        dir('subDir') {
+            checkout scm
+        }
         // sh('pwd')
         // sh('lsblk')
         
