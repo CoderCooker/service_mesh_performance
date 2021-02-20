@@ -34,6 +34,7 @@ kubeadmConfigPatches:
       dataDir: "/tmp/etcd"
         ''')
         sh('sudo chmod -R 777 /home/centos/workspace/scale_client_clusters')
+        sh('/home/centos/workspace/scale_client_clusters/kind get clusters | xargs /home/centos/workspace/scale_client_clusters/kind delete clusters')
        
         
         def uuid1 = Math.abs(new Random().nextInt() % 1000) + 1
