@@ -1,5 +1,9 @@
 #!/usr/bin/env groovy
 
+dir('subDir') {
+    checkout scm
+}
+
 def nodes = [:]
 
 nodesByLabel('cls-10s').each {
