@@ -5,7 +5,7 @@ nodesByLabel('cls-1-10').each {
   nodes[it] = { ->
     node(it) {
       stage("preparation@${it}") {
-        sh('sudo chmod -R 777 /home/centos/workspace/cls-1-5')
+        //sh('sudo chmod -R 777 /home/centos/workspace/cls-1-5')
 
         dir('subDir') {
             checkout scm
