@@ -40,14 +40,14 @@ kubeadmConfigPatches:
         sh('/home/centos/workspace/test-aa/kind get clusters | xargs /home/centos/workspace/test-aa/kind delete clusters')
        
         
-        def uuid1 = Math.abs(new Random().nextInt() % 10000) + 1
+        def uuid1 = Math.abs(new Random().nextInt() % 20000) + 1
         sh('''/home/centos/workspace/test-aa/kind create cluster --name slave-100-cls-'''+ uuid1 +''' --config /home/centos/workspace/test-aa/kind.config''')
 
         // // def uuid2 = Math.abs(new Random().nextInt() % 10000) + 1
         // // sh('''/home/centos/workspace/test-aa/kind create cluster --name slave-100-cls-'''+ uuid2 + ''' --config /home/centos/workspace/test-aa/kind.config''')
         
-        // //sh('docker build -t 477502 -f Dockerfile .')
-        // //sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/test-aa:/home/centos/workspace/test-aa -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
+        sh('docker build -t 477502 -f Dockerfile .')
+        sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/test-aa:/home/centos/workspace/test-aa -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
         sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/test-aa && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/test-aa && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters slave-100-cls-''' + uuid1+''' --log-dir . --debug --csp-token P8ewTR1jva1zc8y7g3JyvXJyoit7Xodfzj7QFNnLs66YOKDCDIWSznFu4dbrrWyv --clusters-per-tenant 1 --apps-per-cluster 17"''')
         }
     }
