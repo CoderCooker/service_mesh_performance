@@ -12,7 +12,7 @@ nodesByLabel('verify-1').each {
         }
 
         sh('pwd')
-        sh('free -mh')
+        
         
         sh('curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.8.1/kind-linux-amd64')
         sh('chmod +x kind')
