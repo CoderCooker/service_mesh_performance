@@ -6,6 +6,7 @@ nodesByLabel('verify-1').each {
     node(it) {
       stage("preparation@${it}") {
         sh('pwd')
+        sh('sudo yum install git -y')
         sh('sudo chmod -R 777 /home/centos/workspace/test-aa')
 
         dir('/home/centos/workspace/test-aa') {
