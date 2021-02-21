@@ -6,7 +6,8 @@ nodesByLabel('verify-1').each {
     node(it) {
       stage("preparation@${it}") {
         sh('pwd')
-
+        sh('sudo chmod -R 777 /home/centos/workspace/test-aa')
+        
         dir('subDir') {
             checkout scm
         }
@@ -36,7 +37,7 @@ kubeadmConfigPatches:
     local:
       dataDir: "/tmp/etcd"
         ''')
-        sh('sudo chmod -R 777 /home/centos/workspace/test-aa')
+        
         //sh('/home/centos/workspace/test-aa/kind get clusters | xargs /home/centos/workspace/test-aa/kind delete clusters')
        
         
