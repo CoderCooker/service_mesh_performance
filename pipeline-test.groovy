@@ -7,8 +7,8 @@ nodesByLabel('verify-1').each {
       stage("preparation@${it}") {
         sh('pwd')
         sh('sudo chmod -R 777 /home/centos/workspace/test-aa')
-        
-        dir('subDir') {
+
+        dir('/home/centos/workspace/test-aa') {
             checkout scm
         }
 
