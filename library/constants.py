@@ -3,7 +3,7 @@
 # Disabled: True
 
 #STAGING0_API_ENDPOINT = "https://staging-0.servicemesh.biz/tsm/v1alpha1"
-STAGING0_API_ENDPOINT = "https://staging-2.servicemesh.biz/tsm/v1alpha1"
+STAGING0_API_ENDPOINT = "https://staging-0.servicemesh.biz/tsm/v1alpha1"
 STAGING_CSP_URL = "https://console-stg.cloud.vmware.com"
 
 AWS_EKS_DESC = "arn:aws:eks:us-west-2:284299419820:cluster"

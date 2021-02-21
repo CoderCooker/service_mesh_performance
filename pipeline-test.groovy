@@ -1,15 +1,15 @@
 #!/usr/bin/env groovy
 def nodes = [:]
 
-nodesByLabel('cls-100s').each {
+nodesByLabel('cls-1-10').each {
   nodes[it] = { ->
     node(it) {
       stage("preparation@${it}") {
-        // sh('sudo chmod -R 777 /home/centos/workspace/slave-30s')
+        sh('sudo chmod -R 777 /home/centos/workspace/cls-1-5')
 
-        // dir('subDir') {
-        //     checkout scm
-        // }
+        dir('subDir') {
+            checkout scm
+        }
         // sh('pwd')
         // sh('lsblk')
         
@@ -35,19 +35,19 @@ nodesByLabel('cls-100s').each {
 //     local:
 //       dataDir: "/tmp/etcd"
 //         ''')
-        //sh('sudo chmod -R 777 /home/centos/workspace/slave-30s')
-        //sh('/home/centos/workspace/slave-30s/kind get clusters | xargs /home/centos/workspace/slave-30s/kind delete clusters')
+        //sh('sudo chmod -R 777 /home/centos/workspace/cls-1-5')
+        //sh('/home/centos/workspace/cls-1-5/kind get clusters | xargs /home/centos/workspace/cls-1-5/kind delete clusters')
        
         
         def uuid1 = Math.abs(new Random().nextInt() % 10000) + 1
-        sh('''/home/centos/workspace/slave-30s/kind create cluster --name slave-100-cls-'''+ uuid1 +''' --config /home/centos/workspace/slave-30s/kind.config''')
+        sh('''/home/centos/workspace/cls-1-5/kind create cluster --name slave-100-cls-'''+ uuid1 +''' --config /home/centos/workspace/cls-1-5/kind.config''')
 
-        def uuid2 = Math.abs(new Random().nextInt() % 10000) + 1
-        sh('''/home/centos/workspace/slave-30s/kind create cluster --name slave-100-cls-'''+ uuid2 + ''' --config /home/centos/workspace/slave-30s/kind.config''')
+        // def uuid2 = Math.abs(new Random().nextInt() % 10000) + 1
+        // sh('''/home/centos/workspace/cls-1-5/kind create cluster --name slave-100-cls-'''+ uuid2 + ''' --config /home/centos/workspace/cls-1-5/kind.config''')
         
         //sh('docker build -t 477502 -f Dockerfile .')
-        //sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/slave-30s:/home/centos/workspace/slave-30s -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
-        sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/slave-30s && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/slave-30s && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters slave-100-cls-''' + uuid1+''',slave-100-cls-'''+uuid2+''' --log-dir . --debug --csp-token kJfh2ZsImeLwv3AT7zGuTFTuRv8OpdIkydseLluytz3pdU6rajZBP3aHV1HQoOCW --clusters-per-tenant 1 --apps-per-cluster 20"''')
+        //sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/cls-1-5:/home/centos/workspace/cls-1-5 -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
+        sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/cls-1-5 && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/cls-1-5 && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters slave-100-cls-''' + uuid1+''' --log-dir . --debug --csp-token P8ewTR1jva1zc8y7g3JyvXJyoit7Xodfzj7QFNnLs66YOKDCDIWSznFu4dbrrWyv --clusters-per-tenant 1 --apps-per-cluster 17"''')
         }
     }
   }
