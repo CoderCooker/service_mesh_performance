@@ -7,40 +7,40 @@ nodesByLabel('verify-1').each {
       stage("preparation@${it}") {
         
         sh('pwd')
-        sh('sudo yum install git -y')
-        sh('sudo chmod -R 777 /home/centos/workspace/test-aa')
+        // sh('sudo yum install git -y')
+        // sh('sudo chmod -R 777 /home/centos/workspace/test-aa')
 
         dir('/home/centos/workspace/test-aa') {
             checkout scm
         }
 
-        sh('pwd')
+//         sh('pwd')
         
         
-        sh('curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.8.1/kind-linux-amd64')
-        sh('chmod +x kind')
-        sh('echo "" > kind.config')
-        sh('''cat <<EOF | sudo tee kind.config
----
-apiVersion: kind.x-k8s.io/v1alpha4
-kind: Cluster
-nodes: 
-  - role: control-plane
-  - role: worker
-  - role: worker
-  - role: worker
-  - role: worker
-kubeadmConfigPatches:
-- |
-  kind: ClusterConfiguration
-  metadata:
-    name: config
-  etcd:
-    local:
-      dataDir: "/tmp/etcd"
-        ''')
+//         sh('curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.8.1/kind-linux-amd64')
+//         sh('chmod +x kind')
+//         sh('echo "" > kind.config')
+//         sh('''cat <<EOF | sudo tee kind.config
+// ---
+// apiVersion: kind.x-k8s.io/v1alpha4
+// kind: Cluster
+// nodes: 
+//   - role: control-plane
+//   - role: worker
+//   - role: worker
+//   - role: worker
+//   - role: worker
+// kubeadmConfigPatches:
+// - |
+//   kind: ClusterConfiguration
+//   metadata:
+//     name: config
+//   etcd:
+//     local:
+//       dataDir: "/tmp/etcd"
+//         ''')
         
-        //sh('/home/centos/workspace/test-aa/kind get clusters | xargs /home/centos/workspace/test-aa/kind delete clusters')
+        sh('/home/centos/workspace/test-aa/kind get clusters | xargs /home/centos/workspace/test-aa/kind delete clusters')
        
         
         def uuid1 = Math.abs(new Random().nextInt() % 40000) + 1
