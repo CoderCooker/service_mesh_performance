@@ -1,20 +1,25 @@
 #!/usr/bin/env groovy
 def nodes = [:]
 
-nodesByLabel('verify-1').each {
+nodesByLabel('fix-me-cls10').each {
   nodes[it] = { ->
     node(it) {
       stage("preparation@${it}") {
         
         sh('pwd')
-        // sh('sudo yum install git -y')
-        // sh('sudo chmod -R 777 /home/centos/workspace/test-aa')
+        sh('sudo yum install git -y')
+        sh('sudo growpart /dev/nvme0n1 2 && sudo xfs_growfs -d /')
+        sh('lsblk')
+        sh('df -mh')
+        sh('free -mh')
 
-        dir('/home/centos/workspace/test-aa') {
-            checkout scm
-        }
+        //sh('sudo chmod -R 777 /home/centos/workspace/test-aa')
 
-//         sh('pwd')
+        // dir('/home/centos/workspace/test-aa') {
+        //     checkout scm
+        // }
+
+
         
         
 //         sh('curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.8.1/kind-linux-amd64')
@@ -40,18 +45,19 @@ nodesByLabel('verify-1').each {
 //       dataDir: "/tmp/etcd"
 //         ''')
         
-        sh('/home/centos/workspace/test-aa/kind get clusters | xargs /home/centos/workspace/test-aa/kind delete clusters')
+        // sh('/home/centos/workspace/test-aa/kind get clusters | xargs /home/centos/workspace/test-aa/kind delete clusters')
        
         
-        def uuid1 = Math.abs(new Random().nextInt() % 40000) + 1
-        sh('''/home/centos/workspace/test-aa/kind create cluster --name slave-100-cls-'''+ uuid1 +''' --config /home/centos/workspace/test-aa/kind.config''')
+        // def uuid1 = Math.abs(new Random().nextInt() % 40000) + 1
+        // sh('''/home/centos/workspace/test-aa/kind create cluster --name slave-100-cls-'''+ uuid1 +''' --config /home/centos/workspace/test-aa/kind.config''')
 
-        def uuid2 = Math.abs(new Random().nextInt() % 40000) + 1
-        sh('''/home/centos/workspace/test-aa/kind create cluster --name slave-100-cls-'''+ uuid2 + ''' --config /home/centos/workspace/test-aa/kind.config''')
+        // def uuid2 = Math.abs(new Random().nextInt() % 40000) + 1
+        // sh('''/home/centos/workspace/test-aa/kind create cluster --name slave-100-cls-'''+ uuid2 + ''' --config /home/centos/workspace/test-aa/kind.config''')
         
-        sh('docker build -t 477502 -f Dockerfile .')
-        sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/test-aa:/home/centos/workspace/test-aa -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
-        sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/test-aa && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/test-aa && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters slave-100-cls-''' + uuid1+''',slave-100-cls-'''+uuid2+''' --log-dir . --debug --csp-token P8ewTR1jva1zc8y7g3JyvXJyoit7Xodfzj7QFNnLs66YOKDCDIWSznFu4dbrrWyv --clusters-per-tenant 1 --apps-per-cluster 17"''')
+        // sh('docker build -t 477502 -f Dockerfile .')
+        // sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/test-aa:/home/centos/workspace/test-aa -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
+        // sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/test-aa && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/test-aa && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters slave-100-cls-''' + uuid1+''',slave-100-cls-'''+uuid2+''' --log-dir . --debug --csp-token P8ewTR1jva1zc8y7g3JyvXJyoit7Xodfzj7QFNnLs66YOKDCDIWSznFu4dbrrWyv --clusters-per-tenant 1 --apps-per-cluster 17"''')
+        
         }
     }
   }
