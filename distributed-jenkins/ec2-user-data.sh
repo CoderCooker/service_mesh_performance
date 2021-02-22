@@ -48,7 +48,7 @@ vol_id=$(aws ec2 describe-volumes --region us-west-2 --filters Name=attachment.i
 echo $vol_id
 aws ec2 modify-volume --volume-id $vol_id --size 300
 sudo growpart /dev/nvme0n1 2
-sudo xfs_growfs -d 
+sudo xfs_growfs -d /
 echo `lsblk`
 
 sudo echo 'tmpfs /tmp tmpfs size=50G 0 0' > /etc/fstab
