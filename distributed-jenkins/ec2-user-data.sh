@@ -38,9 +38,6 @@ sudo aws --version
 sudo rm awscli-bundle.zip
 echo "aws installation done"
 
-aws configure set aws_access_key_id AKIAUEMMQ4CWH5234Q6Z
-aws configure set aws_secret_access_key 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
-aws configure set default.region us-west-2
 
 instance_id=$(curl http://169.254.169.254/latest/meta-data/instance-id)
 echo $instance_id
