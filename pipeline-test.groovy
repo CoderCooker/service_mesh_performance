@@ -43,10 +43,10 @@ kubeadmConfigPatches:
         //sh('/home/centos/workspace/test-aa/kind get clusters | xargs /home/centos/workspace/test-aa/kind delete clusters')
        
         
-        def uuid1 = Math.abs(new Random().nextInt() % 30000) + 1
+        def uuid1 = Math.abs(new Random().nextInt() % 40000) + 1
         sh('''/home/centos/workspace/test-aa/kind create cluster --name slave-100-cls-'''+ uuid1 +''' --config /home/centos/workspace/test-aa/kind.config''')
 
-        def uuid2 = Math.abs(new Random().nextInt() % 10000) + 1
+        def uuid2 = Math.abs(new Random().nextInt() % 40000) + 1
         sh('''/home/centos/workspace/test-aa/kind create cluster --name slave-100-cls-'''+ uuid2 + ''' --config /home/centos/workspace/test-aa/kind.config''')
         
         sh('docker build -t 477502 -f Dockerfile .')
