@@ -94,3 +94,12 @@ KUBERNETES_ISTIO_VIRTUAL_SERVICE_PLURALS = "virtualservices"
 CLIENT_CLUSTER_PREFIX = 'span-client-clusters'
 JENKINS_KUBECTL_PREFIX = "echo \'centos\' | sudo -S "
 
+GNS_VERIFICATION_CLS1_YAMLS=[
+"https://raw.githubusercontent.com/CoderCooker/TSM-GNS-APP-Perf/main/exhaust_gns/ACME/two_clusters/acme_fitness_cls1.yaml",
+"https://raw.githubusercontent.com/CoderCooker/TSM-GNS-APP-Perf/main/exhaust_gns/ACME/two_clusters/cls1_secrets.yaml",
+"https://raw.githubusercontent.com/CoderCooker/TSM-GNS-APP-Perf/main/exhaust_gns/ACME/two_clusters/loadgen.yaml"]
+
+GNS_VERIFICATION_CLS2_YAMLS=[
+"https://raw.githubusercontent.com/CoderCooker/TSM-GNS-APP-Perf/main/exhaust_gns/ACME/two_clusters/acme_fitness_cls2.yaml",
+"https://raw.githubusercontent.com/CoderCooker/TSM-GNS-APP-Perf/main/exhaust_gns/ACME/two_clusters/cls2_secrets.yaml"]
+
