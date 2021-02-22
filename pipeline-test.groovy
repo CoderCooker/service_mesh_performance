@@ -7,8 +7,8 @@ nodesByLabel('fix-me-cls20').each {
       stage("preparation@${it}") {
         
         sh('pwd')
-        sh('sudo yum install git -y')
-        sh('sudo growpart /dev/nvme0n1 2 && sudo xfs_growfs -d /')
+        // sh('sudo yum install git -y')
+        // sh('sudo growpart /dev/nvme0n1 2 && sudo xfs_growfs -d /')
         sh('lsblk')
         sh('df -mh')
         sh('free -mh')
