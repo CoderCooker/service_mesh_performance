@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 def nodes = [:]
 
-nodesByLabel('cls-12-24').each {
+nodesByLabel('cls-18-25').each {
   nodes[it] = { ->
     node(it) {
       stage("preparation@${it}") {
@@ -13,9 +13,9 @@ nodesByLabel('cls-12-24').each {
         // sh('free -mh')
 
         // sh('sudo mkdir -p /tmp/etcd && sudo chmod -R 777 /tmp/etcd')
-        sh('sudo chmod -R 777 /home/centos/workspace/scale_client_clusters/')
+        sh('sudo chmod -R 777 /home/centos/workspace/cls-1-5')
 
-        dir('/home/centos/workspace/scale_client_clusters/') {
+        dir('/home/centos/workspace/cls-1-5') {
             checkout scm
         }
 
@@ -42,24 +42,24 @@ kubeadmConfigPatches:
       dataDir: "/tmp/etcd"
         ''')
         
-       // sh('/home/centos/workspace/scale_client_clusters/kind get clusters | xargs /home/centos/workspace/scale_client_clusters//kind delete clusters')
+       // sh('/home/centos/workspace/cls-1-5kind get clusters | xargs /home/centos/workspace/cls-1-5/kind delete clusters')
        
         
-        def uuid1 = Math.abs(new Random().nextInt() % 1800000) + 1
-        sh('''/home/centos/workspace/scale_client_clusters//kind create cluster --name cls-13-17-'''+ uuid1 +''' --config /home/centos/workspace/scale_client_clusters//kind.config''')
+        def uuid1 = Math.abs(new Random().nextInt() % 2500000) + 1
+        sh('''/home/centos/workspace/cls-1-5/kind create cluster --name cls-18-25-'''+ uuid1 +''' --config /home/centos/workspace/cls-1-5/kind.config''')
 
         // def uuid2 = Math.abs(new Random().nextInt() % 1200000) + 1
-        // sh('''/home/centos/workspace/scale_client_clusters//kind create cluster --name cls-13-17-'''+ uuid2 + ''' --config /home/centos/workspace/scale_client_clusters//kind.config''')
+        // sh('''/home/centos/workspace/cls-1-5/kind create cluster --name cls-18-25-'''+ uuid2 + ''' --config /home/centos/workspace/cls-1-5/kind.config''')
         
         //sh('docker build -t 477502 -f Dockerfile .')
         //sh('docker stop execution')
         //sh('docker rm execution')
-        //sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/scale_client_clusters/:/home/centos/workspace/scale_client_clusters/ -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
+        //sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/cls-1-5:/home/centos/workspace/cls-1-5 -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
         // two clusters
-        //sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/scale_client_clusters/ && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/scale_client_clusters/ && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls-13-17-''' + uuid1+''',cls-13-17-'''+uuid2+''' --log-dir . --debug --csp-token OgyamW2imj6L2CKRq7RcLj4ag9S2AZXrRdBCNj02XY11r8daNXWIY9egDi9bMFw6 --clusters-per-tenant 1 --apps-per-cluster 17"''')
+        //sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/cls-1-5 && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/cls-1-5 && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls-18-25-''' + uuid1+''',cls-18-25-'''+uuid2+''' --log-dir . --debug --csp-token OgyamW2imj6L2CKRq7RcLj4ag9S2AZXrRdBCNj02XY11r8daNXWIY9egDi9bMFw6 --clusters-per-tenant 1 --apps-per-cluster 17"''')
 
         // // staging-0
-        sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/scale_client_clusters/ && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/scale_client_clusters/ && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls-13-17-''' + uuid1+''' --log-dir . --debug --csp-token OgyamW2imj6L2CKRq7RcLj4ag9S2AZXrRdBCNj02XY11r8daNXWIY9egDi9bMFw6 --clusters-per-tenant 1 --apps-per-cluster 17"''')        
+        sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/cls-1-5 && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/cls-1-5 && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls-18-25-''' + uuid1+''' --log-dir . --debug --csp-token OgyamW2imj6L2CKRq7RcLj4ag9S2AZXrRdBCNj02XY11r8daNXWIY9egDi9bMFw6 --clusters-per-tenant 1 --apps-per-cluster 17"''')        
         
         }
     }
