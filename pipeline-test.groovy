@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 def nodes = [:]
 
-nodesByLabel('cls-12-14').each {
+nodesByLabel('cls-12-24').each {
   nodes[it] = { ->
     node(it) {
       stage("preparation@${it}") {
