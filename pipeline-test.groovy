@@ -52,7 +52,10 @@ kubeadmConfigPatches:
         sh('''/home/centos/workspace/exhaust-master/kind create cluster --name cls-1-12-'''+ uuid2 + ''' --config /home/centos/workspace/exhaust-master/kind.config''')
         
         //sh('docker build -t 477502 -f Dockerfile .')
-        //sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/exhaust-master:/home/centos/workspace/exhaust-master -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
+        sh('docker stop execution')
+        sh('docker rm execution')
+        sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/exhaust-master:/home/centos/workspace/exhaust-master -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
+        // two clusters
         sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/exhaust-master && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/exhaust-master && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls-1-12-''' + uuid1+''',cls-1-12-'''+uuid2+''' --log-dir . --debug --csp-token OgyamW2imj6L2CKRq7RcLj4ag9S2AZXrRdBCNj02XY11r8daNXWIY9egDi9bMFw6 --clusters-per-tenant 1 --apps-per-cluster 17"''')
 
         // // staging-0
