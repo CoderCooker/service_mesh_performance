@@ -19,28 +19,28 @@ nodesByLabel('cls-1-12').each {
             checkout scm
         }
 
-//         sh('curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.8.1/kind-linux-amd64')
-//         sh('chmod +x kind')
-//         sh('echo "" > kind.config')
-//         sh('''cat <<EOF | sudo tee kind.config
-// ---
-// apiVersion: kind.x-k8s.io/v1alpha4
-// kind: Cluster
-// nodes: 
-//   - role: control-plane
-//   - role: worker
-//   - role: worker
-//   - role: worker
-//   - role: worker
-// kubeadmConfigPatches:
-// - |
-//   kind: ClusterConfiguration
-//   metadata:
-//     name: config
-//   etcd:
-//     local:
-//       dataDir: "/tmp/etcd"
-//         ''')
+        sh('curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.8.1/kind-linux-amd64')
+        sh('chmod +x kind')
+        sh('echo "" > kind.config')
+        sh('''cat <<EOF | sudo tee kind.config
+---
+apiVersion: kind.x-k8s.io/v1alpha4
+kind: Cluster
+nodes: 
+  - role: control-plane
+  - role: worker
+  - role: worker
+  - role: worker
+  - role: worker
+kubeadmConfigPatches:
+- |
+  kind: ClusterConfiguration
+  metadata:
+    name: config
+  etcd:
+    local:
+      dataDir: "/tmp/etcd"
+        ''')
         
         //sh('/home/centos/workspace/exhaust-master/kind get clusters | xargs /home/centos/workspace/exhaust-master/kind delete clusters')
        
