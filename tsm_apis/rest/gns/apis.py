@@ -74,31 +74,26 @@ def gns_2clusters_5services(clusters, gns, graph_cli, log=None, test_name_space=
         raise "Currently, do not use kind testing this yet."
 
     # create GNS generate load from shopping to services users/cart/catalog/order
-    start = time.time()
     gns_config_dict = dict()
     gns_config_dict[clusters[1]] = [test_name_space]
     gns_config_dict[clusters[0]] = [test_name_space]
 
+    start = time.time()
     gns_name = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 6))
     try:
         gns_obj = gns.save(gns_config_dict, test_gns_domain, gns_name=gns_name)
     except Exception as e:
         raise
-
-    log.info("checking gns {} availability through service queyr.".format(gns_name))
     check_gns_availability(graph_cli, gns_name=gns_name, log=log, start=start)
 
     # cleanup
-    # delete gns
-    log.info("clean setup.")
+    log.info("clean setup. deleting gns, namespaces.")
     gns.delete(gns_name)
-    # delete namespaces
     del_namespace(clusters[0], cls1_context, test_name_space, log=log, kubeconfig=None)
     del_namespace(clusters[1], cls2_context, test_name_space, log=log, kubeconfig=None)
 
+# veriy services are available and traffic is among services
 def check_gns_availability(graph_cli, gns_name=None, log=None, start=None):
-    # veriy services are available and traffic is among services
-    # kubectl --context arn:aws:eks:us-west-2:284299419820:cluster/dd-cl3-dev-st -n acme exec -it shopping-79b67f7ccb-r7kqx -- wget http://users.cc-2ns-bookinfo.com:8081/users
     while True:
         try:
             gns_query = "query globalNamespaceTopology($name: String, $startTime: String, $endTime: String, $noMetrics: Boolean, $withServiceVersions: Boolean!) {\n  root {\n    config {\n      globalNamespace {\n        gns(name: $name) {\n          name\n          queryServiceTopology: queryServiceTopology(\n            startTime: $startTime\n            endTime: $endTime\n          ) {\n            data\n            __typename\n          }\n          queryServiceTable: queryServiceTable(\n            startTime: $startTime\n            endTime: $endTime\n            noMetrics: $noMetrics\n            ShowGateways: true\n          ) {\n            data\n            __typename\n          }\n          queryServiceVersionTable: queryServiceVersionTable(\n            startTime: $startTime\n            endTime: $endTime\n            noMetrics: $noMetrics\n            ShowGateways: true\n          ) @include(if: $withServiceVersions) {\n            data\n            __typename\n          }\n          queryClusterTable(\n            startTime: $startTime\n            endTime: $endTime\n            noMetrics: $noMetrics\n          ) {\n            data\n            __typename\n          }\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n"
@@ -110,9 +105,8 @@ def check_gns_availability(graph_cli, gns_name=None, log=None, start=None):
             "withServiceVersions": True
             }
             resp = execute_query(graph_cli, gns_query, variables=variables, log=log, return_content=True)
-            #log.info("\n gns query --->{} resp --->{} \n".format(gns_query, resp))
+            # log.info("\n gns query --->{} resp --->{} \n".format(gns_query, resp))
             json_obj = json.loads(resp)
-            #print("json obj {}".format(json_obj))
            
             if json_obj["data"] is not None:
                 if json_obj["data"]["root"] is not None:
@@ -120,29 +114,27 @@ def check_gns_availability(graph_cli, gns_name=None, log=None, start=None):
                         if json_obj["data"]["root"]["config"]["globalNamespace"] is not None:
                             if json_obj["data"]["root"]["config"]["globalNamespace"]["gns"] is not None:
                                 gns_resp = json_obj["data"]["root"]["config"]["globalNamespace"]["gns"]
-                                #print("json gns_resp {}".format(gns_resp))
-                                # print("size {}".format(len(gns_resp)))
                                 for gns_item in gns_resp:
-                                    print("one gns name {}".format(gns_item["name"]))
+                                    # log.info("the gns name {}".format(gns_item["name"]))
                                     if gns_name == gns_item["name"]:
                                         if "queryServiceTopology" in gns_item:
                                             queryServiceTopology_data = gns_item["queryServiceTopology"]["data"]
-                                            print("interesting {} queryServiceTopology_data {} size {} \n".format(gns_item["queryServiceTopology"], queryServiceTopology_data, len(queryServiceTopology_data)))
+                                            # log.info("interesting {} queryServiceTopology_data {} size {} \n".format(gns_item["queryServiceTopology"], queryServiceTopology_data, len(queryServiceTopology_data)))
                                         if "queryServiceTable" in gns_item:
                                             queryServiceTable_data = gns_item["queryServiceTable"]["data"]
-                                            print(" queryServiceTable_data {} size {}\n".format(queryServiceTable_data, len(queryServiceTable_data)))
+                                            # log.info(" queryServiceTable_data {} size {}\n".format(queryServiceTable_data, len(queryServiceTable_data)))
                                         if "queryServiceVersionTable" in gns_item:
                                             queryServiceVersionTable_data = gns_item["queryServiceVersionTable"]["data"]
-                                            print(" queryServiceVersionTable_data {} size {} \n".format(queryServiceVersionTable_data,
-                                            len(queryServiceVersionTable_data)))
+                                            # log.info(" queryServiceVersionTable_data {} size {} \n".format(queryServiceVersionTable_data,
+                                            # len(queryServiceVersionTable_data)))
                                         if "queryClusterTable" in gns_item:
                                             queryClusterTable_data = gns_item["queryClusterTable"]["data"]
-                                            print(" queryClusterTable_data {} size {} \n".format(queryClusterTable_data, len(queryClusterTable_data)))
+                                            # log.info(" queryClusterTable_data {} size {} \n".format(queryClusterTable_data, len(queryClusterTable_data)))
                                         if (queryServiceTopology_data is not None and len(queryServiceTopology_data) > 10 ) and\
                                             (queryServiceTable_data is not None and len(queryServiceTable_data) > 10) and\
                                             (queryServiceVersionTable_data is not None and len(queryServiceVersionTable_data) > 10) and\
                                             (queryClusterTable_data is not None and len(queryClusterTable_data) > 10):
-                                            log.info("Traffic is generated from service to service. GNS works as expected.")
+                                            # log.info("Traffic is observed from service to service. GNS works as expected.")
                                             end = time.time()
                                             gns_cost = end - start
                                             log.info("GNS Generation Corss clusters with five services cost {}".format(gns_cost))
@@ -176,7 +168,6 @@ def Run(args):
     #client_cluster = os.getenv("CLUSTER") if os.getenv("CLUSTER") else args.opts.singleCluster
     clusters = os.getenv("CLUSTERS") if os.getenv("CLUSTERS") else args.opts.clusterLists
     cluster_type = os.getenv("CLUSTER_TYPE") if os.getenv("CLUSTER_TYPE") else args.opts.clusterType
-
     #assert prepare_cluster(client_cluster, log=args.log, cluster_type=cluster_type) == 0, "Failed connecting {}".format(client_cluster)
 
     gns = GNS(csp_token, log=args.log)
