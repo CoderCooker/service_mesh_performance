@@ -6,14 +6,14 @@ nodesByLabel('cls-11-15').each {
     node(it) {
       stage("preparation@${it}") {
 
-        sh('sudo yum install git -y')
-        sh('sudo growpart /dev/nvme0n1 2 && sudo xfs_growfs -d /')
-        sh('lsblk')
+        // sh('sudo yum install git -y')
+        // sh('sudo growpart /dev/nvme0n1 2 && sudo xfs_growfs -d /')
+        // sh('lsblk')
         // sh('df -mh')
         // sh('free -mh')
 
         // sh('sudo mkdir -p /tmp/etcd && sudo chmod -R 777 /tmp/etcd')
-        sh('sudo chmod -R 777 /home/centos/workspace/cls-1-5')
+        // sh('sudo chmod -R 777 /home/centos/workspace/cls-1-5')
 
         dir('/home/centos/workspace/cls-1-5') {
             checkout scm
