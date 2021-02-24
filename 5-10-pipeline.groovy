@@ -6,41 +6,41 @@ nodesByLabel('cls-12-24').each {
     node(it) {
       stage("preparation@${it}") {
 
-        sh('sudo yum install git -y')
-        sh('sudo growpart /dev/nvme0n1 2 && sudo xfs_growfs -d /')
-        sh('lsblk')
+        // sh('sudo yum install git -y')
+        // sh('sudo growpart /dev/nvme0n1 2 && sudo xfs_growfs -d /')
+        // sh('lsblk')
         // sh('df -mh')
         // sh('free -mh')
 
-        sh('sudo mkdir -p /tmp/etcd && sudo chmod -R 777 /tmp/etcd')
-        sh('sudo chmod -R 777 /home/centos/workspace/scale_client_clusters')
+        // sh('sudo mkdir -p /tmp/etcd && sudo chmod -R 777 /tmp/etcd')
+        // sh('sudo chmod -R 777 /home/centos/workspace/scale_client_clusters')
 
         dir('/home/centos/workspace/scale_client_clusters') {
             checkout scm
         }
 
-        sh('curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.8.1/kind-linux-amd64')
-        sh('chmod +x kind')
-        sh('echo "" > kind.config')
-        sh('''cat <<EOF | sudo tee kind.config
----
-apiVersion: kind.x-k8s.io/v1alpha4
-kind: Cluster
-nodes: 
-  - role: control-plane
-  - role: worker
-  - role: worker
-  - role: worker
-  - role: worker
-kubeadmConfigPatches:
-- |
-  kind: ClusterConfiguration
-  metadata:
-    name: config
-  etcd:
-    local:
-      dataDir: "/tmp/etcd"
-        ''')
+//         sh('curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.8.1/kind-linux-amd64')
+//         sh('chmod +x kind')
+//         sh('echo "" > kind.config')
+//         sh('''cat <<EOF | sudo tee kind.config
+// ---
+// apiVersion: kind.x-k8s.io/v1alpha4
+// kind: Cluster
+// nodes: 
+//   - role: control-plane
+//   - role: worker
+//   - role: worker
+//   - role: worker
+//   - role: worker
+// kubeadmConfigPatches:
+// - |
+//   kind: ClusterConfiguration
+//   metadata:
+//     name: config
+//   etcd:
+//     local:
+//       dataDir: "/tmp/etcd"
+//         ''')
         
        //sh('/home/centos/workspace/scale_client_clusters/kind get clusters | xargs /home/centos/workspace/scale_client_clusters/kind delete clusters')
        
