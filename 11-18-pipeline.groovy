@@ -1,14 +1,14 @@
 #!/usr/bin/env groovy
 def nodes = [:]
 
-nodesByLabel('cls-18-25').each {
+nodesByLabel('cls-11-15').each {
   nodes[it] = { ->
     node(it) {
       stage("preparation@${it}") {
 
         sh('sudo yum install git -y')
-        // sh('sudo growpart /dev/nvme0n1 2 && sudo xfs_growfs -d /')
-        // sh('lsblk')
+        sh('sudo growpart /dev/nvme0n1 2 && sudo xfs_growfs -d /')
+        sh('lsblk')
         // sh('df -mh')
         // sh('free -mh')
 
@@ -42,24 +42,24 @@ kubeadmConfigPatches:
       dataDir: "/tmp/etcd"
         ''')
         
-        sh('/home/centos/workspace/cls-1-5/kind get clusters | xargs /home/centos/workspace/cls-1-5/kind delete clusters')
+        //sh('/home/centos/workspace/cls-1-5/kind get clusters | xargs /home/centos/workspace/cls-1-5/kind delete clusters')
        
         
-        def uuid1 = Math.abs(new Random().nextInt() % 25000000) + 1
-        sh('''/home/centos/workspace/cls-1-5/kind create cluster --name cls-11-18-'''+ uuid1 +''' --config /home/centos/workspace/cls-1-5/kind.config''')
+        def uuid1 = Math.abs(new Random().nextInt() % 150000000) + 1
+        sh('''/home/centos/workspace/cls-1-5/kind create cluster --name cls11-15-'''+ uuid1 +''' --config /home/centos/workspace/cls-1-5/kind.config''')
 
         // def uuid2 = Math.abs(new Random().nextInt() % 1200000) + 1
-        // sh('''/home/centos/workspace/cls-1-5/kind create cluster --name cls-11-18-'''+ uuid2 + ''' --config /home/centos/workspace/cls-1-5/kind.config''')
+        // sh('''/home/centos/workspace/cls-1-5/kind create cluster --name cls11-15-'''+ uuid2 + ''' --config /home/centos/workspace/cls-1-5/kind.config''')
         
         //sh('docker build -t 477502 -f Dockerfile .')
-        sh('docker stop execution')
-        sh('docker rm execution')
+        //sh('docker stop execution')
+        //sh('docker rm execution')
         sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/cls-1-5:/home/centos/workspace/cls-1-5 -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
         // two clusters
-        //sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/cls-1-5 && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/cls-1-5 && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls-11-18-''' + uuid1+''',cls-11-18-'''+uuid2+''' --log-dir . --debug --csp-token OgyamW2imj6L2CKRq7RcLj4ag9S2AZXrRdBCNj02XY11r8daNXWIY9egDi9bMFw6 --clusters-per-tenant 1 --apps-per-cluster 17"''')
+        //sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/cls-1-5 && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/cls-1-5 && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls11-15-''' + uuid1+''',cls11-15-'''+uuid2+''' --log-dir . --debug --csp-token OgyamW2imj6L2CKRq7RcLj4ag9S2AZXrRdBCNj02XY11r8daNXWIY9egDi9bMFw6 --clusters-per-tenant 1 --apps-per-cluster 17"''')
 
         // // staging-0
-        sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/cls-1-5 && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/cls-1-5 && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls-11-18-''' + uuid1+''' --log-dir . --debug --csp-token P8ewTR1jva1zc8y7g3JyvXJyoit7Xodfzj7QFNnLs66YOKDCDIWSznFu4dbrrWyv --clusters-per-tenant 1 --apps-per-cluster 17"''')        
+        sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/cls-1-5 && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/cls-1-5 && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls11-15-''' + uuid1+''' --log-dir . --debug --csp-token P8ewTR1jva1zc8y7g3JyvXJyoit7Xodfzj7QFNnLs66YOKDCDIWSznFu4dbrrWyv --clusters-per-tenant 1 --apps-per-cluster 17"''')        
         
         }
     }

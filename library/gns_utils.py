@@ -268,6 +268,24 @@ class GNS(object):
         if self.log:
             self.log.info("successfully get gns {}".format(gns_id))
         return 0
+    
+    def get_member(self, gns_id):
+         # GET /v1alpha1/global-namespaces/{id}/members
+        get_url = "{}/global-namespaces/{}/members".format(
+        STAGING0_API_ENDPOINT, gns_id)
+        headers = {'csp-auth-token': self.csp.get_access_token()}
+        try:
+            resp = request(get_url, operation='GET',
+                          status_code=[200],
+                          csp_url=STAGING_CSP_URL,
+                          headers=headers,
+                          verbose_flag=True)
+            self.log.info('get gns member response {}'.format(resp.json()))
+        except Exception as ex:
+            traceback.format_exc()
+            raise
+        return 0
+
 
 def Run(args):
     args.log.info("start testing %s" % (args.shortName))

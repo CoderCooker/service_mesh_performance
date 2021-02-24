@@ -86,9 +86,23 @@ def gns_2clusters_5services(clusters, gns, graph_cli, log=None, test_name_space=
         raise
     check_gns_availability(graph_cli, gns_name=gns_name, log=log, start=start)
 
+    start = time.time()
+    gns.get(gns_name)
+    gns_get_cost = time.time() - start
+    start = time.time()
+    gns.get_member(gns_name)
+    gns_get_member_cost = time.time() - start
+    start = time.time()
+    gns.list_gns()
+    gns_list_cost = time.time() - start
+
     # cleanup
     log.info("clean setup. deleting gns, namespaces.")
+    start = time.time()
     gns.delete(gns_name)
+    gns_delete_cost = time.time() - start
+    log.info("gns get {} gns_get_member {} list_gns {} delete gns {}".format(gns_get_cost, gns_get_member_cost, gns_list_cost, gns_delete_cost))
+
     del_namespace(clusters[0], cls1_context, test_name_space, log=log, kubeconfig=None)
     del_namespace(clusters[1], cls2_context, test_name_space, log=log, kubeconfig=None)
 
@@ -189,12 +203,12 @@ def Run(args):
     gns_2clusters_5services(clusters, gns, graph_cli, log=args.log, test_name_space=gns_test_ns, test_gns_domain=gns_domain)
     # GET /v1alpha1/global-namespaces/{id}/capabilities/{capability}
     # GET /v1alpha1/global-namespaces/{id}/capabilities
-    # GET /v1alpha1/global-namespaces/{id}/members
+   
     # PUT /v1alpha1/global-namespaces/{id}/routing-policy/{routingPolicyId}
-    # PUT /v1alpha1/global-namespaces/{id}
-    # GET /v1alpha1/global-namespaces/{id}
+   
+   
     # DELETE /v1alpha1/global-namespaces/{id}
     # POST /v1alpha1/global-namespaces
-    # GET /v1alpha1/global-namespaces
+    
     #gns_name = "dfgphk"
     #check_gns_availability(graph_cli, gns_name=gns_name, log=args.log)
