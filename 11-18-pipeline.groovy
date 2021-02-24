@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 def nodes = [:]
 
-nodesByLabel('cls-16-20').each {
+nodesByLabel('cls-22-30').each {
   nodes[it] = { ->
     node(it) {
       stage("preparation@${it}") {
@@ -45,7 +45,7 @@ kubeadmConfigPatches:
         //sh('/home/centos/workspace/cls-1-5/kind get clusters | xargs /home/centos/workspace/cls-1-5/kind delete clusters')
        
         
-        def uuid1 = Math.abs(new Random().nextInt() % 210000000) + 1
+        def uuid1 = Math.abs(new Random().nextInt() % 300000000) + 1
         sh('''/home/centos/workspace/cls-1-5/kind create cluster --name cls16-21-'''+ uuid1 +''' --config /home/centos/workspace/cls-1-5/kind.config''')
 
         // def uuid2 = Math.abs(new Random().nextInt() % 1200000) + 1
