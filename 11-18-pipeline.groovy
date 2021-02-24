@@ -59,7 +59,7 @@ kubeadmConfigPatches:
         //sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/cls-1-5 && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/cls-1-5 && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls-11-18-''' + uuid1+''',cls-11-18-'''+uuid2+''' --log-dir . --debug --csp-token OgyamW2imj6L2CKRq7RcLj4ag9S2AZXrRdBCNj02XY11r8daNXWIY9egDi9bMFw6 --clusters-per-tenant 1 --apps-per-cluster 17"''')
 
         // // staging-0
-        sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/cls-1-5 && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/cls-1-5 && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls-11-18-''' + uuid1+''' --log-dir . --debug --csp-token OgyamW2imj6L2CKRq7RcLj4ag9S2AZXrRdBCNj02XY11r8daNXWIY9egDi9bMFw6 --clusters-per-tenant 1 --apps-per-cluster 17"''')        
+        sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/cls-1-5 && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/cls-1-5 && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls-11-18-''' + uuid1+''' --log-dir . --debug --csp-token P8ewTR1jva1zc8y7g3JyvXJyoit7Xodfzj7QFNnLs66YOKDCDIWSznFu4dbrrWyv --clusters-per-tenant 1 --apps-per-cluster 17"''')        
         
         }
     }
