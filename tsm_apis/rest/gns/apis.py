@@ -119,7 +119,6 @@ def check_gns_availability(graph_cli, gns_name=None, log=None, start=None):
             "withServiceVersions": True
             }
             resp = execute_query(graph_cli, gns_query, variables=variables, log=log, return_content=True)
-            # log.info("\n gns query --->{} resp --->{} \n".format(gns_query, resp))
             json_obj = json.loads(resp)
            
             if json_obj["data"] is not None:
@@ -129,32 +128,25 @@ def check_gns_availability(graph_cli, gns_name=None, log=None, start=None):
                             if json_obj["data"]["root"]["config"]["globalNamespace"]["gns"] is not None:
                                 gns_resp = json_obj["data"]["root"]["config"]["globalNamespace"]["gns"]
                                 for gns_item in gns_resp:
-                                    # log.info("the gns name {}".format(gns_item["name"]))
                                     if gns_name == gns_item["name"]:
                                         if "queryServiceTopology" in gns_item:
                                             queryServiceTopology_data = gns_item["queryServiceTopology"]["data"]
-                                            # log.info("interesting {} queryServiceTopology_data {} size {} \n".format(gns_item["queryServiceTopology"], queryServiceTopology_data, len(queryServiceTopology_data)))
                                         if "queryServiceTable" in gns_item:
                                             queryServiceTable_data = gns_item["queryServiceTable"]["data"]
-                                            # log.info(" queryServiceTable_data {} size {}\n".format(queryServiceTable_data, len(queryServiceTable_data)))
                                         if "queryServiceVersionTable" in gns_item:
                                             queryServiceVersionTable_data = gns_item["queryServiceVersionTable"]["data"]
-                                            # log.info(" queryServiceVersionTable_data {} size {} \n".format(queryServiceVersionTable_data,
-                                            # len(queryServiceVersionTable_data)))
                                         if "queryClusterTable" in gns_item:
                                             queryClusterTable_data = gns_item["queryClusterTable"]["data"]
-                                            # log.info(" queryClusterTable_data {} size {} \n".format(queryClusterTable_data, len(queryClusterTable_data)))
                                         if (queryServiceTopology_data is not None and len(queryServiceTopology_data) > 10 ) and\
                                             (queryServiceTable_data is not None and len(queryServiceTable_data) > 10) and\
                                             (queryServiceVersionTable_data is not None and len(queryServiceVersionTable_data) > 10) and\
                                             (queryClusterTable_data is not None and len(queryClusterTable_data) > 10):
-                                            # log.info("Traffic is observed from service to service. GNS works as expected.")
                                             end = time.time()
                                             gns_cost = end - start
                                             log.info("GNS Generation Corss clusters with five services cost {}".format(gns_cost))
                                             return
                                         log.info("service traffic is not available yet. sleep and retry.")
-                                        time.sleep(10)
+                                        time.sleep(2)
         except Exception as e:
             raise
 
