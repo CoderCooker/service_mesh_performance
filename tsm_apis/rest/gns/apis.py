@@ -11,6 +11,9 @@ from library.kubenertes_utils import *
 import traceback
 from library.utils import CSP, request
 from library.gns_utils import GNS
+from tsm_apis.graphql.queries import GraphQLClient, execute_query
+
+import json
 
 def psv_apis(client_cluster, gns, log=None):
     name = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 6))
@@ -38,18 +41,21 @@ def psv_apis(client_cluster, gns, log=None):
         traceback.format_exc()
         raise     
 
-def gns_2clusters_5services(clusters, gns, graph_cli, log=args.log, ns="cc-2ns-bookinfo", cluster_type='EKS'):
+def gns_2clusters_5services(clusters, gns, graph_cli, log=None, test_name_space=None, test_gns_domain=None, cluster_type="EKS"):
 
     # create_namespaces
+    random_num = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 6))
+    test_name_space = "{}-{}".format(test_name_space, random_num)
     for cluster in clusters:
         assert prepare_cluster(cluster, log=log, cluster_type=cluster_type) == 0, "Failed connecting {}".format(cluster)
-        create_namespace(cluster, ns, log=log)
+        create_namespace(cluster, test_name_space, log=log)
 
     # deploy_services, deploy load generator
     if cluster_type=='EKS':
         cls1_context = "{}/{}".format(AWS_EKS_DESC, clusters[0])
         for cls_1_yaml in GNS_VERIFICATION_CLS1_YAMLS:
-            deploy_service = "kubectl --context {} apply -f {}".format(cls1_context, cls_1_yaml)
+            deploy_service = "kubectl --context {} -n {} apply -f {}".format(cls1_context, test_name_space, cls_1_yaml)
+            log.info("deploying to cls1 {}".format(deploy_service))
             rt, out, err = run_local_sh_cmd(deploy_service)
             log.info("deploying yaml {} on {} rt {} out {} err {}.".format(cls_1_yaml, clusters[0], rt, out, err))
             assert rt == 0, "Failed deploying {} yaml on cluster 1 {}, err {}".format(cls_1_yaml, clusters[0], err)
@@ -59,22 +65,38 @@ def gns_2clusters_5services(clusters, gns, graph_cli, log=args.log, ns="cc-2ns-b
     if cluster_type=='EKS':
         cls2_context = "{}/{}".format(AWS_EKS_DESC, clusters[1])
         for cls_2_yaml in GNS_VERIFICATION_CLS2_YAMLS:
-            deploy_service = "kubectl --context {} apply -f {}".format(cls2_context, cls_2_yaml)
+            deploy_service = "kubectl --context {} -n {} apply -f {}".format(cls2_context, test_name_space, cls_2_yaml)
+            log.info("deploying to cls2 {}".format(deploy_service))
             rt, out, err = run_local_sh_cmd(deploy_service)
-            log.info("deploying yaml {} on {} rt {} out {} err {}.".format(cls_2_yaml, clusters[0], rt, out, err))
-            assert rt == 0, "Failed deploying {} yaml on cluster 2 {}, err {}".format(cls_2_yaml, clusters[0], err)
+            log.info("deploying yaml {} on {} rt {} out {} err {}.".format(cls_2_yaml, clusters[1], rt, out, err))
+            assert rt == 0, "Failed deploying {} yaml on cluster 2 {}, err {}".format(cls_2_yaml, clusters[1], err)
     elif cluster_type.upper()=='KIND':
         raise "Currently, do not use kind testing this yet."
 
     # create GNS generate load from shopping to services users/cart/catalog/order
     start = time.time()
     gns_config_dict = dict()
-    gns_config_dict[clusters[1]] = [ns]
-    gns_config_dict[clusters[0]] = [ns]
+    gns_config_dict[clusters[1]] = [test_name_space]
+    gns_config_dict[clusters[0]] = [test_name_space]
 
     gns_name = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 6))
-    gns_obj = gns.save(gns_config_dict, '{}.local'.format(ns), gns_name=gns_name)
+    try:
+        gns_obj = gns.save(gns_config_dict, test_gns_domain, gns_name=gns_name)
+    except Exception as e:
+        raise
 
+    log.info("checking gns {} availability through service queyr.".format(gns_name))
+    check_gns_availability(graph_cli, gns_name=gns_name, log=log, start=start)
+
+    # cleanup
+    # delete gns
+    log.info("clean setup.")
+    gns.delete(gns_name)
+    # delete namespaces
+    del_namespace(clusters[0], cls1_context, test_name_space, log=log, kubeconfig=None)
+    del_namespace(clusters[1], cls2_context, test_name_space, log=log, kubeconfig=None)
+
+def check_gns_availability(graph_cli, gns_name=None, log=None, start=None):
     # veriy services are available and traffic is among services
     # kubectl --context arn:aws:eks:us-west-2:284299419820:cluster/dd-cl3-dev-st -n acme exec -it shopping-79b67f7ccb-r7kqx -- wget http://users.cc-2ns-bookinfo.com:8081/users
     while True:
@@ -84,39 +106,51 @@ def gns_2clusters_5services(clusters, gns, graph_cli, log=args.log, ns="cc-2ns-b
             "name": gns_name,
             "startTime": "now() - 1h",
             "endTime": "now()",
-            "noMetrics": false,
-            "withServiceVersions": true
+            "noMetrics": False,
+            "withServiceVersions": True
             }
-            resp = execute_query(graph_cli, gns_query, variables=variables, log=args.log, return_content=True).json()
-            log.info("\n gns query {} resp {} \n".format(gns_query, resp))
-            gns_resp = resp["data"]["root"]["config"]["globalNamespace"]["gns"]
-            if gns_resp:
-                for gns_item in gns_resp:
-                    if gns_name == gns_item["name"]:
-                        queryServiceTopology_data = gns_item["queryServiceTopology"]
-                        queryServiceTable_data = gns_item["queryServiceTable"]
-                        queryServiceVersionTable_data = gns_item["queryServiceVersionTable"]
-                        queryClusterTable_data = gns_item["queryClusterTable"]
-                        if queryServiceTopology_data and queryServiceTable_data and queryServiceVersionTable_data and queryClusterTable_data:
-                            log.info("Traffic is generated from service to service. GNS works as expected.")
-                            break
-            log.info("No traffic from service to service yet. sleep and retry")
-            time.sleep(10)
+            resp = execute_query(graph_cli, gns_query, variables=variables, log=log, return_content=True)
+            #log.info("\n gns query --->{} resp --->{} \n".format(gns_query, resp))
+            json_obj = json.loads(resp)
+            #print("json obj {}".format(json_obj))
+           
+            if json_obj["data"] is not None:
+                if json_obj["data"]["root"] is not None:
+                    if json_obj["data"]["root"]["config"] is not None:
+                        if json_obj["data"]["root"]["config"]["globalNamespace"] is not None:
+                            if json_obj["data"]["root"]["config"]["globalNamespace"]["gns"] is not None:
+                                gns_resp = json_obj["data"]["root"]["config"]["globalNamespace"]["gns"]
+                                #print("json gns_resp {}".format(gns_resp))
+                                # print("size {}".format(len(gns_resp)))
+                                for gns_item in gns_resp:
+                                    print("one gns name {}".format(gns_item["name"]))
+                                    if gns_name == gns_item["name"]:
+                                        if "queryServiceTopology" in gns_item:
+                                            queryServiceTopology_data = gns_item["queryServiceTopology"]["data"]
+                                            print("interesting {} queryServiceTopology_data {} size {} \n".format(gns_item["queryServiceTopology"], queryServiceTopology_data, len(queryServiceTopology_data)))
+                                        if "queryServiceTable" in gns_item:
+                                            queryServiceTable_data = gns_item["queryServiceTable"]["data"]
+                                            print(" queryServiceTable_data {} size {}\n".format(queryServiceTable_data, len(queryServiceTable_data)))
+                                        if "queryServiceVersionTable" in gns_item:
+                                            queryServiceVersionTable_data = gns_item["queryServiceVersionTable"]["data"]
+                                            print(" queryServiceVersionTable_data {} size {} \n".format(queryServiceVersionTable_data,
+                                            len(queryServiceVersionTable_data)))
+                                        if "queryClusterTable" in gns_item:
+                                            queryClusterTable_data = gns_item["queryClusterTable"]["data"]
+                                            print(" queryClusterTable_data {} size {} \n".format(queryClusterTable_data, len(queryClusterTable_data)))
+                                        if (queryServiceTopology_data is not None and len(queryServiceTopology_data) > 10 ) and\
+                                            (queryServiceTable_data is not None and len(queryServiceTable_data) > 10) and\
+                                            (queryServiceVersionTable_data is not None and len(queryServiceVersionTable_data) > 10) and\
+                                            (queryClusterTable_data is not None and len(queryClusterTable_data) > 10):
+                                            log.info("Traffic is generated from service to service. GNS works as expected.")
+                                            end = time.time()
+                                            gns_cost = end - start
+                                            log.info("GNS Generation Corss clusters with five services cost {}".format(gns_cost))
+                                            return
+                                        log.info("service traffic is not available yet. sleep and retry.")
+                                        time.sleep(10)
         except Exception as e:
             raise
-
-    end = time.time()
-    gns_cost = end - start
-    log.info("GNS Generation Corss clusters with five services cost {}".format(cost))
-    # cleanup
-
-    # delete gns
-    gns.delete(gns_name)
-    # delete namespaces
-    delete_service = "kubectl --context {} delete -f {}".format(cls1_context, cls_1_yaml)
-    del_namespace(clusters[0], cls1_context, ns, log=log, kubeconfig=None)
-    del_namespace(clusters[1], cls2_context, ns, log=log, kubeconfig=None)
-
 
 def gns_apis(client_cluster, gns, log=None):
     try:
@@ -138,13 +172,14 @@ def gns_apis(client_cluster, gns, log=None):
 def Run(args):
     args.log.info("start testing %s"%(args.shortName))
     csp_token = os.getenv("CSP_TOKEN") if os.getenv("CSP_TOKEN") else args.opts.cspToken
-    gns = GNS(csp_token, log=args.log)
-    client_cluster = os.getenv("CLUSTER") if os.getenv("CLUSTER") else args.opts.singleCluster
+    
+    #client_cluster = os.getenv("CLUSTER") if os.getenv("CLUSTER") else args.opts.singleCluster
+    clusters = os.getenv("CLUSTERS") if os.getenv("CLUSTERS") else args.opts.clusterLists
     cluster_type = os.getenv("CLUSTER_TYPE") if os.getenv("CLUSTER_TYPE") else args.opts.clusterType
-    assert prepare_cluster(client_cluster, log=args.log, cluster_type=cluster_type) == 0, "Failed connecting {}".format(client_cluster)
 
-    gns_apis(client_cluster, gns, log=args.log)
+    #assert prepare_cluster(client_cluster, log=args.log, cluster_type=cluster_type) == 0, "Failed connecting {}".format(client_cluster)
 
+    gns = GNS(csp_token, log=args.log)
     csp = CSP(csp_token, log=args.log)
     graph_cli = GraphQLClient("{}/graphql".format(STAGING0_API_ENDPOINT))
     try:
@@ -157,5 +192,18 @@ def Run(args):
         graph_cli.inject_token(access_token, headername='csp-auth-token')
         pass
 
-    gns_2clusters_5services(clusters, gns, graph_cli, log=args.log, ns="cc-2ns-bookinfo")
-    #psv_apis(client_cluster, gns, log=args.log)
+    gns_domain = "cc-2ns-bookinfo.local"
+    gns_test_ns = "acme"
+    clusters = clusters.split(",")
+    gns_2clusters_5services(clusters, gns, graph_cli, log=args.log, test_name_space=gns_test_ns, test_gns_domain=gns_domain)
+    # GET /v1alpha1/global-namespaces/{id}/capabilities/{capability}
+    # GET /v1alpha1/global-namespaces/{id}/capabilities
+    # GET /v1alpha1/global-namespaces/{id}/members
+    # PUT /v1alpha1/global-namespaces/{id}/routing-policy/{routingPolicyId}
+    # PUT /v1alpha1/global-namespaces/{id}
+    # GET /v1alpha1/global-namespaces/{id}
+    # DELETE /v1alpha1/global-namespaces/{id}
+    # POST /v1alpha1/global-namespaces
+    # GET /v1alpha1/global-namespaces
+    #gns_name = "dfgphk"
+    #check_gns_availability(graph_cli, gns_name=gns_name, log=args.log)
