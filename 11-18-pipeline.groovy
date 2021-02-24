@@ -42,8 +42,9 @@ kubeadmConfigPatches:
       dataDir: "/tmp/etcd"
         ''')
         
-        //sh('/home/centos/workspace/cls-1-5/kind get clusters | xargs /home/centos/workspace/cls-1-5/kind delete clusters')
-        def uuid1 = Math.abs(new Random().nextInt() % 300000) + 1
+        sh('/home/centos/workspace/cls-1-5/kind get clusters | xargs /home/centos/workspace/cls-1-5/kind delete clusters')
+        
+        def uuid1 = Math.abs(new Random().nextInt() % 3000000) + 1
         sh('''/home/centos/workspace/cls-1-5/kind create cluster --name cls22-30-'''+ uuid1 +''' --config /home/centos/workspace/cls-1-5/kind.config''')
 
         // def uuid2 = Math.abs(new Random().nextInt() % 1200000) + 1
