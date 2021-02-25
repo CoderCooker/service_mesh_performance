@@ -52,12 +52,14 @@ kubeadmConfigPatches:
         // sh('''/home/centos/workspace/scale_client_clusters/kind create cluster --name cls510-'''+ uuid2 + ''' --config /home/centos/workspace/scale_client_clusters/kind.config''')
         
         //sh('docker build -t 477502 -f Dockerfile .')
-        //sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/scale_client_clusters:/home/centos/workspace/scale_client_clusters -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
+        sh('docker stop execution')
+        sh('docker rm execution')
+        sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/scale_client_clusters:/home/centos/workspace/scale_client_clusters -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
         // two clusters
         //sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/scale_client_clusters && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/scale_client_clusters && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls510-''' + uuid1+''',cls510-'''+uuid2+''' --log-dir . --debug --csp-token OgyamW2imj6L2CKRq7RcLj4ag9S2AZXrRdBCNj02XY11r8daNXWIY9egDi9bMFw6 --clusters-per-tenant 1 --apps-per-cluster 17"''')
 
         // // staging-0
-        sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/exhaust-master && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/exhaust-master && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls1-5-''' + uuid1+''' --log-dir . --debug --csp-token OgyamW2imj6L2CKRq7RcLj4ag9S2AZXrRdBCNj02XY11r8daNXWIY9egDi9bMFw6 --clusters-per-tenant 1 --apps-per-cluster 17"''')        
+        sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/scale_client_clusters && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/scale_client_clusters && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls1-5-''' + uuid1+''' --log-dir . --debug --csp-token OgyamW2imj6L2CKRq7RcLj4ag9S2AZXrRdBCNj02XY11r8daNXWIY9egDi9bMFw6 --clusters-per-tenant 1 --apps-per-cluster 17"''')        
         //sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/scale_client_clusters && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/scale_client_clusters && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls510-''' + uuid1+''' --log-dir . --debug --csp-token P8ewTR1jva1zc8y7g3JyvXJyoit7Xodfzj7QFNnLs66YOKDCDIWSznFu4dbrrWyv --clusters-per-tenant 1 --apps-per-cluster 17"''')        
         
         }
