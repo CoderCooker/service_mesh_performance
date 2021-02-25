@@ -1,13 +1,13 @@
 #!/usr/bin/env groovy
 def nodes = [:]
 
-nodesByLabel('cls-16-25').each {
+nodesByLabel('cls-31-40').each {
   nodes[it] = { ->
     node(it) {
       stage("preparation@${it}") {
 
         sh('sudo yum install git -y')
-        //sh('sudo growpart /dev/nvme0n1 2 && sudo xfs_growfs -d /')
+        sh('sudo growpart /dev/nvme0n1 2 && sudo xfs_growfs -d /')
         sh('lsblk')
 //         // sh('df -mh')
 //         // sh('free -mh')
@@ -44,10 +44,10 @@ kubeadmConfigPatches:
         
         //sh('/home/centos/workspace/cls-1-5/kind get clusters | xargs /home/centos/workspace/cls-1-5/kind delete clusters')
         
-        def uuid1 = Math.abs(new Random().nextInt() % 2500000) + 1
+        def uuid1 = Math.abs(new Random().nextInt() % 3100000) + 1
         sh('''/home/centos/workspace/cls-1-5/kind create cluster --name cls16-25-'''+ uuid1 +''' --config /home/centos/workspace/cls-1-5/kind.config''')
 
-        def uuid2 = Math.abs(new Random().nextInt() % 2500000) + 1
+        def uuid2 = Math.abs(new Random().nextInt() % 3100000) + 1
         sh('''/home/centos/workspace/cls-1-5/kind create cluster --name cls16-25-'''+ uuid2 + ''' --config /home/centos/workspace/cls-1-5/kind.config''')
         
         sh('docker build -t 477502 -f Dockerfile .')
