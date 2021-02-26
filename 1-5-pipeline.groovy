@@ -48,10 +48,10 @@ kubeadmConfigPatches:
         // def uuid2 = Math.abs(new Random().nextInt() % 1200000) + 1
         // sh('''/home/centos/workspace/exhaust-master/kind create cluster --name cls1-5-'''+ uuid2 + ''' --config /home/centos/workspace/exhaust-master/kind.config''')
         
-        sh('docker build -t 477502 -f Dockerfile .')
+        //sh('docker build -t 477502 -f Dockerfile .')
         // sh('docker stop execution')
         // sh('docker rm execution')
-        sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/exhaust-master:/home/centos/workspace/exhaust-master -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
+        //sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/exhaust-master:/home/centos/workspace/exhaust-master -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
         // two clusters
         //sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/exhaust-master && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/exhaust-master && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls1-5-''' + uuid1+''',cls1-5-'''+uuid2+''' --log-dir . --debug --csp-token P8ewTR1jva1zc8y7g3JyvXJyoit7Xodfzj7QFNnLs66YOKDCDIWSznFu4dbrrWyv --clusters-per-tenant 1 --apps-per-cluster 17"''')
 
