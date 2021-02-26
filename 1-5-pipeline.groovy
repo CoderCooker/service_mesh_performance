@@ -39,7 +39,7 @@ kubeadmConfigPatches:
       dataDir: "/tmp/etcd"
         ''')
         sh('sudo chmod -R 777 /home/centos/workspace/exhaust-master')
-        // sh('/home/centos/workspace/exhaust-master/kind get clusters | xargs /home/centos/workspace/exhaust-master/kind delete clusters')
+        sh('/home/centos/workspace/exhaust-master/kind get clusters | xargs /home/centos/workspace/exhaust-master/kind delete clusters')
        
         
         def uuid1 = Math.abs(new Random().nextInt() % 1000) + 1
