@@ -221,7 +221,7 @@ def prepare_kind_cluster(client_cluster, log=None):
         cur_dir = os.getenv("WORKSPACE")
         file_id = generate_randoms()
         tmp_kube_config = "{}/{}".format(cur_dir, file_id)
-        cmd = "echo \'centos\' | sudo -S {}/kind get kubeconfig --name={} >> {}".format(cur_dir, client_cluster, tmp_kube_config)
+        cmd = "echo \'jenkins\' | sudo -S {}/kind get kubeconfig --name={} >> {}".format(cur_dir, client_cluster, tmp_kube_config)
         rt, out, err = run_local_sh_cmd(cmd)
         log.info("getting kind cluster {} configuration file [cmd] {} rt {} out {} err {}".format(client_cluster, cmd, rt, out, err))
         assert rt == 0, "Failed executing {}, err {}".format(cmd, err)
@@ -245,28 +245,28 @@ def prepare_cluster(client_cluster, log=None, cluster_type='EKS'):
         elif cluster_type.upper()=='KIND':
             return prepare_kind_cluster(client_cluster, log=log)
         else:
-            cmd = "echo \'centos\' | sudo -S cat ~/.kube/config"
+            cmd = "echo \'jenkins\' | sudo -S cat ~/.kube/config"
             rt, out, err = run_local_sh_cmd(cmd)
             log.info("[cmd] {} out {} err {} rt {}".format(cmd, out, err, rt))
             if rt != 0:
                 log.error("failed connecting {}, err {}".format(client_cluster, err))
                 return rt
 
-            cmd = "echo \'centos\' | sudo -S kubectl config get-contexts | grep \"{}\"".format(client_cluster)
+            cmd = "echo \'jenkins\' | sudo -S kubectl config get-contexts | grep \"{}\"".format(client_cluster)
             rt, out, err = run_local_sh_cmd(cmd)
             log.info("[cmd] {} out {} err {} rt {}".format(cmd, out, err, rt))
             if rt != 0:
                 log.error("atm failed connecting {}, err {}".format(client_cluster, err))
             elif len(out) > 0:
                 log.info("cluster {} context already loaded.".format(client_cluster))
-                cmd = "echo \'centos\' | sudo -S kubectl config use-context kind-{}".format(client_cluster)
+                cmd = "echo \'jenkins\' | sudo -S kubectl config use-context kind-{}".format(client_cluster)
                 rt, out, err = run_local_sh_cmd(cmd)
                 log.info("using cluster {} context [cmd] {} rt {} out {} err {}".format(client_cluster, cmd, rt, out, err))
                 if rt != 0:
                     log.error("failed switching to kind cluster {} context, err {}".format(client_cluster, err))
                     return rt
                 else:  
-                    cmd = "echo \'centos\' | sudo -S kubectl get ns"
+                    cmd = "echo \'jenkins\' | sudo -S kubectl get ns"
                     rt, out, err = run_local_sh_cmd(cmd)
                     log.info("verifying cluster {} context [cmd] {} rt {} out {} err {}".format(client_cluster, cmd, rt, out, err))
                     if rt != 0:
@@ -286,7 +286,7 @@ def prepare_cluster(client_cluster, log=None, cluster_type='EKS'):
                 log.info("tmp_kube_config {} size {} emptying it.".format(tmp_kube_config, tmp_kube_config_file_size))
                 open(tmp_kube_config, 'w').close()
 
-            cmd = "echo \'centos\' | sudo -S {}/kind get kubeconfig --name={} >> {}".format(cur_dir, client_cluster, tmp_kube_config)
+            cmd = "echo \'jenkins\' | sudo -S {}/kind get kubeconfig --name={} >> {}".format(cur_dir, client_cluster, tmp_kube_config)
             log.info("getting kind cluster {} configuration file [cmd] {}".format(client_cluster, cmd))
             rt, out, err = run_local_sh_cmd(cmd)
             assert rt == 0, "Failed executing {}, err {}".format(cmd, err)
@@ -301,7 +301,7 @@ def prepare_cluster(client_cluster, log=None, cluster_type='EKS'):
             if not os.path.exists(temp_merge_config):
                 os.mknod(temp_merge_config)
 
-            cmd = "echo \'centos\' | sudo -S KUBECONFIG=~/.kube/config:{} kubectl config view --merge --flatten > {} && echo \'centos\' | sudo -S mv {} ~/.kube/config".format(tmp_kube_config, temp_merge_config, temp_merge_config)
+            cmd = "echo \'jenkins\' | sudo -S KUBECONFIG=~/.kube/config:{} kubectl config view --merge --flatten > {} && echo \'jenkins\' | sudo -S mv {} ~/.kube/config".format(tmp_kube_config, temp_merge_config, temp_merge_config)
             log.info("merging cluster {} configuration file [cmd] {}".format(client_cluster, cmd))
             rt, out, err = run_local_sh_cmd(cmd)
             if rt != 0:
