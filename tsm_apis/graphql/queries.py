@@ -136,7 +136,7 @@ def Run(args):
     args.log.info("4th query")
     for interval in time_interval:
         #inventory_cluster_service_metrics = 'query FindServiceMetrics($cluster: String, $startTime: String, $endTime: String) {root {inventory {clusters(name: $cluster) { name queryServiceTable(startTime: $startTime,endTime: $endTime) {data}}}}}'
-        inventory_cluster_service_metrics = 'query inventoryServiceTable($startTime: String, $endTime: String, $showGateways: String, $noMetrics: String) {root {inventory { queryServiceTable(startTime: $startTime, endTime: $endTime, showGateways: true, noMetrics: true) { data}}}}'
+        inventory_cluster_service_metrics = 'query inventoryServiceTable($startTime: String, $endTime: String) {root {inventory { queryServiceTable(startTime: $startTime, endTime: $endTime, ShowGateways: true, noMetrics: true) { data}}}}'
         variables = {
             "startTime": '%s' % (time.time() - interval * 60),
             "endTime": '%s' % (time.time()),
@@ -314,7 +314,7 @@ def Run(args):
     args.log.info("15th query")
     gns_details_query =  '''query GetGlobalNamespace($name: String) {root {config {globalNamespace {gns(name: $name) {
    name description color domain caType  ca version matchingConditions }}}}}'''
-    variables = {"name": "f93krq"}
+    variables = {"name": "32rs8z"}
     cost = 0
     for x in range(0, loop):
         cost += execute_query(graph_cli, gns_details_query, variables=variables, log=args.log)
@@ -330,7 +330,7 @@ def Run(args):
         variables = {
             "startTime": '%s' % (time.time() - interval * 60),
             "endTime": '%s' % (time.time()),
-            "gnsName": 'f93krq'
+            "gnsName": '32rs8z'
         }
         cost = 0
         for x in range(0, loop):
