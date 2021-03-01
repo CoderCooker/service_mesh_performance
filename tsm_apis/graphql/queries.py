@@ -119,7 +119,7 @@ def Run(args):
 
     args.log.info("3rd query")
     for interval in time_interval:
-        inventory_table = 'query clusterInventoryTable($startTime: String, $endTime: String) { root { inventory { clusters { name queryClusterTable(startTime: $startTime, endTime: $endTime) { data __typename } __typename } __typename } __typename}}'
+        inventory_table = 'query clusterInventoryTable($startTime: String, $endTime: String) { root { inventory { clusters { name queryClusterTable(startTime: $startTime, endTime: $endTime, noMetrics: true) { data __typename } __typename } __typename } __typename}}'
         variables = {
             "startTime": '%s' % (time.time() - interval * 60),
             "endTime": '%s' % (time.time())
@@ -135,11 +135,12 @@ def Run(args):
     
     args.log.info("4th query")
     for interval in time_interval:
-        inventory_cluster_service_metrics = 'query FindServiceMetrics($cluster: String, $startTime: String, $endTime: String) {root {inventory {clusters(name: $cluster) { name queryServiceTable(startTime: $startTime,endTime: $endTime) {data}}}}}'
+        #inventory_cluster_service_metrics = 'query FindServiceMetrics($cluster: String, $startTime: String, $endTime: String) {root {inventory {clusters(name: $cluster) { name queryServiceTable(startTime: $startTime,endTime: $endTime) {data}}}}}'
+        inventory_cluster_service_metrics = 'query inventoryServiceTable($startTime: String, $endTime: String, $showGateways: String, $noMetrics: String) {root {inventory { queryServiceTable(startTime: $startTime, endTime: $endTime, showGateways: true, noMetrics: true) { data}}}}'
         variables = {
             "startTime": '%s' % (time.time() - interval * 60),
             "endTime": '%s' % (time.time()),
-            "cluster": client_cluster
+            # "cluster": client_cluster
         }
         cost = 0
         for x in range(0, loop):
