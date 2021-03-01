@@ -30,32 +30,32 @@ def Run(args):
     onboard = os.getenv("ON_BOARD") if os.getenv("ON_BOARD") else args.opts.onBoard
     csp = CSP(csp_token, log=args.log)
 
-    clusters = clusters.split(",")
-    while True:
-        i = 1
-        gns_config_dict = dict()
-        domain_name = 'cc-scale-gns-{}.com'.format(i)
-        for cluster in clusters:
-            if onboard:
-                assert prepare_cluster(cluster, log=args.log, cluster_type=cluster_type) == 0, "Failed connecting {}".format(cluster)
-                args.log.info("onboard cluster {}.".format(cluster))
-                install_tenant_cluster(csp, cluster, log=args.log)
+    # clusters = clusters.split(",")
+    # while True:
+    #     i = 1
+    #     gns_config_dict = dict()
+    #     domain_name = 'cc-scale-gns-{}.com'.format(i)
+    #     for cluster in clusters:
+    #         if onboard:
+    #             assert prepare_cluster(cluster, log=args.log, cluster_type=cluster_type) == 0, "Failed connecting {}".format(cluster)
+    #             args.log.info("onboard cluster {}.".format(cluster))
+    #             install_tenant_cluster(csp, cluster, log=args.log)
 
-                args.log.info("install istio on cluster {}.".format(cluster))
-                istio(csp, cluster, 'install', log=args.log)
-            namespace = "scale-gns-cluster{}-ns ".format(i)
-            create_namespace(cluster, namespace, log=args.log, cluster_type=cluster_type)
-            deploy_config(cluster, namespace, i, log=args.log, cluster_type=cluster_type)
-            args.log("cluster <{}> namespace <{}>".format(cluster, namespace))
-            gns_config_dict[cluster] = [namespace]
-        config_gns(csp_token, gns_dict=gns_config_dict, domain_name=domain_name, log=args.log):
-        i += 1
-        if i > 3:
-            break
+    #             args.log.info("install istio on cluster {}.".format(cluster))
+    #             istio(csp, cluster, 'install', log=args.log)
+    #         namespace = "scale-gns-cluster{}-ns ".format(i)
+    #         create_namespace(cluster, namespace, log=args.log, cluster_type=cluster_type)
+    #         deploy_config(cluster, namespace, i, log=args.log, cluster_type=cluster_type)
+    #         args.log("cluster <{}> namespace <{}>".format(cluster, namespace))
+    #         gns_config_dict[cluster] = [namespace]
+    #     config_gns(csp_token, gns_dict=gns_config_dict, domain_name=domain_name, log=args.log):
+    #     i += 1
+    #     if i > 3:
+    #         break
 
-    # domain_name = "gns-2ns-sc.local"
-    # csp_token = "OgyamW2imj6L2CKRq7RcLj4ag9S2AZXrRdBCNj02XY11r8daNXWIY9egDi9bMFw6"
-    # cluster_type = "KIND"
-    # gns_config_dict = dict()
-    # gns_config_dict["dd-cl3-dev-st"] = ["fortioclient","fortioserver"]
-    # config_gns(csp_token, gns_dict=gns_config_dict, domain_name=domain_name, log=args.log)
+    domain_name = "gns-2ns-sc.local"
+    csp_token = "kJfh2ZsImeLwv3AT7zGuTFTuRv8OpdIkydseLluytz3pdU6rajZBP3aHV1HQoOCW"
+    cluster_type = "KIND"
+    gns_config_dict = dict()
+    gns_config_dict["dd-red-cl1-dev-st"] = ["fortioclient","fortioserver"]
+    config_gns(csp_token, gns_dict=gns_config_dict, domain_name=domain_name, log=args.log)
