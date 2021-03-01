@@ -7,9 +7,9 @@ nodesByLabel('cls-1-10').each {
       stage("preparation@${it}") {
 
         sh('sudo yum install git -y')
-        sh('sudo growpart /dev/nvme0n1 2 && sudo xfs_growfs -d /')
-        sh('lsblk')
-        sh('sudo mkdir -p /tmp/etcd && sudo chmod -R 777 /tmp/etcd')
+        // sh('sudo growpart /dev/nvme0n1 2 && sudo xfs_growfs -d /')
+        // sh('lsblk')
+        // sh('sudo mkdir -p /tmp/etcd && sudo chmod -R 777 /tmp/etcd')
 
         dir('/home/centos/workspace/exhaust-master') {
             checkout scm
@@ -38,15 +38,16 @@ kubeadmConfigPatches:
       dataDir: "/tmp/etcd"
         ''')
         sh('sudo chmod -R 777 /home/centos/workspace/exhaust-master')
-        
+        sh('''/home/centos/workspace/exhaust-master/kind delete clusters | xargs /home/centos/workspace/exhaust-master/kind get clusters''')
+
         def uuid1 = Math.abs(new Random().nextInt() % 100000) + 1
         sh('''/home/centos/workspace/exhaust-master/kind create cluster --name cls1-5-'''+ uuid1 +''' --config /home/centos/workspace/exhaust-master/kind.config''')
 
         def uuid2 = Math.abs(new Random().nextInt() % 100000) + 1
         sh('''/home/centos/workspace/exhaust-master/kind create cluster --name cls1-5-'''+ uuid2 + ''' --config /home/centos/workspace/exhaust-master/kind.config''')
         
-        sh('docker build -t 477502 -f Dockerfile .')
-        sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/exhaust-master:/home/centos/workspace/exhaust-master -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
+        //sh('docker build -t 477502 -f Dockerfile .')
+        //sh('docker run --name execution -t -d -u 997:994 --volume-driver=nfs --network=host --privileged -v /home/centos/workspace/exhaust-master:/home/centos/workspace/exhaust-master -v /var/run/docker.sock:/var/run/docker.sock 477502:latest')
         sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/exhaust-master && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/exhaust-master && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls1-5-''' + uuid1+''',cls1-5-'''+uuid2+''' --log-dir . --debug --csp-token kJfh2ZsImeLwv3AT7zGuTFTuRv8OpdIkydseLluytz3pdU6rajZBP3aHV1HQoOCW --clusters-per-tenant 1 --apps-per-cluster 17"''')
 
         // staging-0 3cd92ae5-2a1e-4c65-88e8-c653aa1e6f55
