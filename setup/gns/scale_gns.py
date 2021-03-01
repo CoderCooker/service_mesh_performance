@@ -18,7 +18,7 @@ def config_gns(csp_token, gns_dict=None, domain_name=None, log=None):
         traceback.format_exc()
         raise
 
-def deploy_config(cluster, namespace, i, log=log):
+def deploy_config(cluster, namespace, i, log=None):
     log.info('skip deploy the app cluster i manifest into namespace')
     return
 
