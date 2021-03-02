@@ -30,6 +30,7 @@ sudo systemctl enable docker
 sudo chmod 666 /var/run/docker.sock
 echo "docker installation done"
 
+
 sudo yum install unzip -y
 curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
 unzip awscli-bundle.zip
