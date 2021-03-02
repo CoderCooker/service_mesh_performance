@@ -38,7 +38,6 @@ sudo aws --version
 sudo rm awscli-bundle.zip
 echo "aws installation done"
 
-
 instance_id=$(curl http://169.254.169.254/latest/meta-data/instance-id)
 echo $instance_id
 vol_id=$(aws ec2 describe-volumes --region us-west-2 --filters Name=attachment.instance-id,Values=$instance_id --query 'Volumes[*].[VolumeId, State==`attached`]'  --output text  | awk '{print $1}')
