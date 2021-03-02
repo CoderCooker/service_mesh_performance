@@ -54,8 +54,7 @@ def Run(args):
     #         break
 
     domain_name = "gns-2ns-sc.local"
-    csp_token = "kJfh2ZsImeLwv3AT7zGuTFTuRv8OpdIkydseLluytz3pdU6rajZBP3aHV1HQoOCW"
-    cluster_type = "KIND"
+    csp_token = "**"
     gns_config_dict = dict()
     gns_config_dict["dd-red-cl1-dev-st"] = ["fortioclient","fortioserver"]
     config_gns(csp_token, gns_dict=gns_config_dict, domain_name=domain_name, log=args.log)
