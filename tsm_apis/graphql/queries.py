@@ -183,7 +183,7 @@ def Run(args):
         variables = {
             "startTime": '%s' % (time.time() - interval * 60),
             "endTime": '%s' % (time.time()),
-            "cluster": "dd-cl3-dev-st",
+            "cluster": "dd-red-cl1-dev-st",
             "domain": "gns-2ns-sc.local",
             "service": "fortioserver"
         }
@@ -314,7 +314,7 @@ def Run(args):
     args.log.info("15th query")
     gns_details_query =  '''query GetGlobalNamespace($name: String) {root {config {globalNamespace {gns(name: $name) {
    name description color domain caType  ca version matchingConditions }}}}}'''
-    variables = {"name": "32rs8z"}
+    variables = {"name": "x52jz6"}
     cost = 0
     for x in range(0, loop):
         cost += execute_query(graph_cli, gns_details_query, variables=variables, log=args.log)
@@ -330,7 +330,7 @@ def Run(args):
         variables = {
             "startTime": '%s' % (time.time() - interval * 60),
             "endTime": '%s' % (time.time()),
-            "gnsName": '32rs8z'
+            "gnsName": 'x52jz6'
         }
         cost = 0
         for x in range(0, loop):
