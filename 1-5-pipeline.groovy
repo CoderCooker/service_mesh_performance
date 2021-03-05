@@ -7,7 +7,7 @@ nodesByLabel('cls-10').each {
       stage("preparation@${it}") {
 
         sh('sudo yum install git -y')
-        sh('sudo growpart /dev/nvme0n1 2 && sudo xfs_growfs -d /')
+        // sh('sudo growpart /dev/nvme0n1 2 && sudo xfs_growfs -d /')
         sh('lsblk')
         sh('sudo mkdir -p /tmp/etcd && sudo chmod -R 777 /tmp/etcd')
 
