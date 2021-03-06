@@ -50,7 +50,7 @@ def Run(args):
         random_num = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 6))
         test_name_space = "acme-{}".format(random_num)
         for cluster in clusters:
-            create_namespace(cluster, test_name_space, log=log)
+            create_namespace(cluster, test_name_space, log=args.log)
 
         # deploy_services, deploy load generator
         cls1_context = "{}/{}".format(AWS_EKS_DESC, clusters[0])
