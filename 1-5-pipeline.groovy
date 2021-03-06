@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 def nodes = [:]
 
-nodesByLabel('cls-21-22').each {
+nodesByLabel('cls-23-25').each {
   nodes[it] = { ->
     node(it) {
       stage("preparation@${it}") {
@@ -44,13 +44,13 @@ kubeadmConfigPatches:
 
 //        sh('''/home/centos/workspace/exhaust-master/kind get clusters | xargs /home/centos/workspace/exhaust-master/kind delete clusters''')
         def uuid1 = Math.abs(new Random().nextInt() % 550000) + 1
-        sh('''/home/centos/workspace/exhaust-master/kind create cluster --name cls-21-22'''+ uuid1 +''' --config /home/centos/workspace/exhaust-master/kind.config''')
+        sh('''/home/centos/workspace/exhaust-master/kind create cluster --name cls-23-25'''+ uuid1 +''' --config /home/centos/workspace/exhaust-master/kind.config''')
 
         // def uuid2 = Math.abs(new Random().nextInt() % 550000) + 1
-        // sh('''/home/centos/workspace/exhaust-master/kind create cluster --name cls-21-22'''+ uuid2 + ''' --config /home/centos/workspace/exhaust-master/kind.config''')
+        // sh('''/home/centos/workspace/exhaust-master/kind create cluster --name cls-23-25'''+ uuid2 + ''' --config /home/centos/workspace/exhaust-master/kind.config''')
         
-        // sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/exhaust-master && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/exhaust-master && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls-21-22''' + uuid1+''',cls-21-22'''+uuid2+''' --log-dir . --debug --csp-token kJfh2ZsImeLwv3AT7zGuTFTuRv8OpdIkydseLluytz3pdU6rajZBP3aHV1HQoOCW --clusters-per-tenant 1 --apps-per-cluster 18"''')
-        sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/exhaust-master && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/exhaust-master && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls-21-22''' + uuid1+''' --log-dir . --debug --csp-token kJfh2ZsImeLwv3AT7zGuTFTuRv8OpdIkydseLluytz3pdU6rajZBP3aHV1HQoOCW --clusters-per-tenant 1 --apps-per-cluster 18"''')        
+        // sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/exhaust-master && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/exhaust-master && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls-23-25''' + uuid1+''',cls-23-25'''+uuid2+''' --log-dir . --debug --csp-token kJfh2ZsImeLwv3AT7zGuTFTuRv8OpdIkydseLluytz3pdU6rajZBP3aHV1HQoOCW --clusters-per-tenant 1 --apps-per-cluster 18"''')
+        sh('''docker exec -i execution /bin/bash -c "cd /home/centos/workspace/exhaust-master && export ONBOARD=true && export WORKSPACE=/home/centos/workspace/exhaust-master && python3.7 library/pyfra.py --tests-dir setup/client_cluster --cluster-type kind --clusters cls-23-25''' + uuid1+''' --log-dir . --debug --csp-token kJfh2ZsImeLwv3AT7zGuTFTuRv8OpdIkydseLluytz3pdU6rajZBP3aHV1HQoOCW --clusters-per-tenant 1 --apps-per-cluster 18"''')        
 
         }
     }
