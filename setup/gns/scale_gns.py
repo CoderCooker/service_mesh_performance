@@ -56,17 +56,17 @@ def Run(args):
         cls1_context = "{}/{}".format(AWS_EKS_DESC, clusters[0])
         for cls_1_yaml in GNS_VERIFICATION_CLS1_YAMLS:
             deploy_service = "kubectl --context {} -n {} apply -f {}".format(cls1_context, test_name_space, cls_1_yaml)
-            log.info("deploying to cls1 {}".format(deploy_service))
+            args.log.info("deploying to cls1 {}".format(deploy_service))
             rt, out, err = run_local_sh_cmd(deploy_service)
-            log.info("deploying yaml {} on {} rt {} out {} err {}.".format(cls_1_yaml, clusters[0], rt, out, err))
+            args.log.info("deploying yaml {} on {} rt {} out {} err {}.".format(cls_1_yaml, clusters[0], rt, out, err))
             assert rt == 0, "Failed deploying {} yaml on cluster 1 {}, err {}".format(cls_1_yaml, clusters[0], err)
       
         cls2_context = "{}/{}".format(AWS_EKS_DESC, clusters[1])
         for cls_2_yaml in GNS_VERIFICATION_CLS2_YAMLS:
             deploy_service = "kubectl --context {} -n {} apply -f {}".format(cls2_context, test_name_space, cls_2_yaml)
-            log.info("deploying to cls2 {}".format(deploy_service))
+            args.log.info("deploying to cls2 {}".format(deploy_service))
             rt, out, err = run_local_sh_cmd(deploy_service)
-            log.info("deploying yaml {} on {} rt {} out {} err {}.".format(cls_2_yaml, clusters[1], rt, out, err))
+            args.log.info("deploying yaml {} on {} rt {} out {} err {}.".format(cls_2_yaml, clusters[1], rt, out, err))
             assert rt == 0, "Failed deploying {} yaml on cluster 2 {}, err {}".format(cls_2_yaml, clusters[1], err)
 
         # create GNS generate load from shopping to services users/cart/catalog/order
