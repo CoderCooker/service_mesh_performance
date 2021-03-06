@@ -124,7 +124,7 @@ def check_gns_availability(graph_cli, gns_name=None, log=None, start=None):
             }
             resp = execute_query(graph_cli, gns_query, variables=variables, log=log, return_content=True)
             json_obj = json.loads(resp)
-           
+            log.info("\n query resp %s \n", json_obj)
             if json_obj["data"] is not None:
                 if json_obj["data"]["root"] is not None:
                     if json_obj["data"]["root"]["config"] is not None:
@@ -150,7 +150,7 @@ def check_gns_availability(graph_cli, gns_name=None, log=None, start=None):
                                             log.info("GNS Generation Corss clusters with five services cost {}".format(gns_cost))
                                             return
                                         log.info("service traffic is not available yet. sleep and retry.")
-                                        time.sleep(2)
+                                        time.sleep(1)
         except Exception as e:
             raise
 
