@@ -5,6 +5,7 @@
 # Timeout: 24000
 
 from tsm_apis.rest.onoffboard.boardapis import *
+from tsm_apis.rest.gns.apis import check_gns_availability
 from library.kubenertes_utils import *
 from library.gns_utils import GNS
 
@@ -24,37 +25,66 @@ def deploy_config(cluster, namespace, i, log=None):
 
 def Run(args):
     args.log.info("start testing %s"%(args.shortName))
-    clusters = os.getenv("CLUSTERS") if os.getenv("CLUSTERS") else args.opts.clusterLists
     csp_token = os.getenv("CSP_TOKEN") if os.getenv("CSP_TOKEN") else args.opts.cspToken
-    cluster_type = os.getenv("CLUSTER_TYPE") if os.getenv("CLUSTER_TYPE") else args.opts.clusterType
-    onboard = os.getenv("ON_BOARD") if os.getenv("ON_BOARD") else args.opts.onBoard
-    csp = CSP(csp_token, log=args.log)
+    clusters = os.getenv("CLUSTERS") if os.getenv("CLUSTERS") else args.opts.clusterLists
 
-    # clusters = clusters.split(",")
-    # while True:
-    #     i = 1
-    #     gns_config_dict = dict()
-    #     domain_name = 'cc-scale-gns-{}.com'.format(i)
-    #     for cluster in clusters:
-    #         if onboard:
-    #             assert prepare_cluster(cluster, log=args.log, cluster_type=cluster_type) == 0, "Failed connecting {}".format(cluster)
-    #             args.log.info("onboard cluster {}.".format(cluster))
-    #             install_tenant_cluster(csp, cluster, log=args.log)
+    clusters = clusters.split(",")
+    for cluster in clusters:
+        assert prepare_cluster(cluster, log=args.log) == 0, "Failed connecting {}".format(cluster)
 
-    #             args.log.info("install istio on cluster {}.".format(cluster))
-    #             istio(csp, cluster, 'install', log=args.log)
-    #         namespace = "scale-gns-cluster{}-ns ".format(i)
-    #         create_namespace(cluster, namespace, log=args.log, cluster_type=cluster_type)
-    #         deploy_config(cluster, namespace, i, log=args.log, cluster_type=cluster_type)
-    #         args.log("cluster <{}> namespace <{}>".format(cluster, namespace))
-    #         gns_config_dict[cluster] = [namespace]
-    #     config_gns(csp_token, gns_dict=gns_config_dict, domain_name=domain_name, log=args.log):
-    #     i += 1
-    #     if i > 3:
-    #         break
+    gns = GNS(csp_token, log=args.log)
+    graph_cli = GraphQLClient("{}/graphql".format(STAGING0_API_ENDPOINT))
+    try:
+        graph_cli.inject_token(csp.get_access_token(), headername='csp-auth-token')
+    except Exception as e:
+        cmd = 'curl -X POST https://console-stg.cloud.vmware.com/csp/gateway/am/api/auth/api-tokens/authorize?refresh_token={} | jq -r \'.access_token\''.format(csp_token)
+        rt, out, err = run_local_sh_cmd(cmd)
+        assert rt == 0, "Failed getting refresh token rt {}, err {}".format(rt, err)
+        access_token = out.strip()
+        graph_cli.inject_token(access_token, headername='csp-auth-token')
+        pass
 
-    domain_name = "gns-2ns-sc.local"
-    csp_token = "**"
-    gns_config_dict = dict()
-    gns_config_dict["dd-red-cl1-dev-st"] = ["fortioclient","fortioserver"]
-    config_gns(csp_token, gns_dict=gns_config_dict, domain_name=domain_name, log=args.log)
+    i = 1
+    while i <= 20:
+        # create_namespaces
+        random_num = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 6))
+        test_name_space = "acme-{}".format(random_num)
+        for cluster in clusters:
+            create_namespace(cluster, test_name_space, log=log)
+
+        # deploy_services, deploy load generator
+        cls1_context = "{}/{}".format(AWS_EKS_DESC, clusters[0])
+        for cls_1_yaml in GNS_VERIFICATION_CLS1_YAMLS:
+            deploy_service = "kubectl --context {} -n {} apply -f {}".format(cls1_context, test_name_space, cls_1_yaml)
+            log.info("deploying to cls1 {}".format(deploy_service))
+            rt, out, err = run_local_sh_cmd(deploy_service)
+            log.info("deploying yaml {} on {} rt {} out {} err {}.".format(cls_1_yaml, clusters[0], rt, out, err))
+            assert rt == 0, "Failed deploying {} yaml on cluster 1 {}, err {}".format(cls_1_yaml, clusters[0], err)
+      
+        cls2_context = "{}/{}".format(AWS_EKS_DESC, clusters[1])
+        for cls_2_yaml in GNS_VERIFICATION_CLS2_YAMLS:
+            deploy_service = "kubectl --context {} -n {} apply -f {}".format(cls2_context, test_name_space, cls_2_yaml)
+            log.info("deploying to cls2 {}".format(deploy_service))
+            rt, out, err = run_local_sh_cmd(deploy_service)
+            log.info("deploying yaml {} on {} rt {} out {} err {}.".format(cls_2_yaml, clusters[1], rt, out, err))
+            assert rt == 0, "Failed deploying {} yaml on cluster 2 {}, err {}".format(cls_2_yaml, clusters[1], err)
+
+        # create GNS generate load from shopping to services users/cart/catalog/order
+        gns_config_dict = dict()
+        gns_config_dict[clusters[1]] = [test_name_space]
+        gns_config_dict[clusters[0]] = [test_name_space]
+
+        gns_name = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 6))
+        try:
+            gns_obj = gns.save(gns_config_dict, "{}.local".format(test_name_space), gns_name=gns_name)
+        except Exception as e:
+            raise
+        start = time.time()
+        check_gns_availability(graph_cli, gns_name=gns_name, log=args.log, start=start)
+        i += 1
+
+    # domain_name = "gns-2ns-sc.local"
+    # csp_token = ""
+    # gns_config_dict = dict()
+    # gns_config_dict["dd-red-cl1-dev-st"] = ["fortioclient","fortioserver"]
+    # config_gns(csp_token, gns_dict=gns_config_dict, domain_name=domain_name, log=args.log)
