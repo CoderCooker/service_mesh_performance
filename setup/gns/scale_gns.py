@@ -65,7 +65,7 @@ def Run(args):
             assert rt == 0, "Failed deploying {} yaml on cluster 1 {}, err {}".format(cls_1_yaml, clusters[0], err)
       
         domain_name = "{}.local".format(test_name_space)
-        create_deployment(domain_name=domain_name, namespace=test_name_space)
+        create_deployment(domain_name=domain_name, namespace=test_name_space, context=cls1_context)
 
         cls2_context = "{}/{}".format(AWS_EKS_DESC, clusters[1])
         for cls_2_yaml in GNS_VERIFICATION_CLS2_YAMLS:

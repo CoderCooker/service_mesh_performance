@@ -571,9 +571,9 @@ def create_gateway(cluster, gateway_name='my_gateway', namespace='default', host
     )
     pprint(resource)
 
-def create_deployment(domain_name=None, namespace=None):
+def create_deployment(domain_name=None, namespace=None, context=None):
     try:
-        config.load_kube_config()
+        config.load_kube_config(context=context)
         apps_v1 = client.AppsV1Api()
         deployment = create_deployment_object(domain_name)
       
@@ -597,7 +597,7 @@ def create_deployment_object(domain_name=None):
 
         env=[client.V1EnvVar(name="DETAILS_HOSTNAME", value='details.{}'.format(domain_name)),
         client.V1EnvVar(name="RATINGS_HOSTNAME", value='ratings.{}'.format(domain_name)),
-        client.V1EnvVar(name="REVIEWS_HOSTNAME", value='reviews.%s'.format(domain_name))
+        client.V1EnvVar(name="REVIEWS_HOSTNAME", value='reviews.{}'.format(domain_name))
         ],
 
         ports=[client.V1ContainerPort(container_port=9080)],
