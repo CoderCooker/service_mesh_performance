@@ -28,7 +28,7 @@ def check_gns_service(context, namespace, domain_name, log=None, start=None):
     sleep_pod = out.strip()
     while True:
         check_cmd = 'kubectl --context {} -n {} exec -it {}  -c sleep -- sh -c \'curl http://productpage.{}:9080/productpage | grep \'Book Details\''.format(context, namespace, sleep_pod, domain_name)
-        log.info("check services availability cmd {}".format())
+        log.info("check services availability cmd {}".format(check_cmd))
         rt, out, err = run_local_sh_cmd(check_cmd)
         assert rt == 0, "Failed checking services err {}".format(err)
         log.info("checking services  rt {} out {} err {}.".format(rt, out, err))
