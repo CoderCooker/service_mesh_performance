@@ -606,7 +606,7 @@ def create_deployment_object(domain_name=None):
 
     volume = client.V1Volume(
         name = "tmp",
-        mountPath = "/tmp",
+        mount_path = "/tmp",
     )
 
     # Create and configurate a spec section
