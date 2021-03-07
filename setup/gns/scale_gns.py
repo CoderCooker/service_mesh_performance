@@ -27,18 +27,25 @@ def check_gns_service(context, namespace, domain_name, log=None, start=None):
     log.info("get pods {} rt {} out {} err {}.".format(get_pods_cmd, rt, out, err))
     sleep_pod = out.split()[0].strip()
     while True:
-        check_cmd = 'kubectl --context {} -n {} exec -it {}  -c sleep -- sh -c \'curl http://productpage.{}:9080/productpage | grep \'Book Details\'\''.format(context, namespace, sleep_pod, domain_name)
+        check_cmd = 'kubectl --context {} -n {} exec -i {}  -c sleep -- sh -c \'curl http://productpage.{}:9080/productpage | grep \'Book Details\'\''.format(context, namespace, sleep_pod, domain_name)
         log.info("check services availability cmd {}".format(check_cmd))
-        rt, out, err = run_local_sh_cmd(check_cmd)
-        assert rt == 0, "Failed checking services err {}".format(err)
-        log.info("checking services  rt {} out {} err {}.".format(rt, out, err))
-        if 'Book Details' in out.strip():
-            end = time.time()
-            response_time = end - start
-            log.info("product already retrieve book details from details serivce through GNS within {} seconds.".format(response_time))
-            if response_time > 30:
-                raise("touch TSM limits.")
-        time.sleep(1)
+        try:
+            rt, out, err = run_local_sh_cmd(check_cmd)
+            assert rt == 0, "Failed checking services err {}".format(err)
+            log.info("checking services  rt {} out {} err {}.".format(rt, out, err))
+            if 'Book Details' in out.strip():
+                end = time.time()
+                response_time = end - start
+                log.info("product already retrieve book details from details serivce through GNS within {} seconds.".format(response_time))
+                if response_time > 30:
+                    raise("touch TSM limits.")
+                else:
+                    return
+            time.sleep(1)
+        except Exception as e:
+            raise
+        
+
 
 def Run(args):
     args.log.info("start testing %s"%(args.shortName))
