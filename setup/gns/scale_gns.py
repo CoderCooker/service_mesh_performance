@@ -85,8 +85,8 @@ def Run(args):
             gns_obj = gns.save(gns_config_dict, domain_name, gns_name=gns_name)
         except Exception as e:
             raise
-        start = time.time()
-        check_gns_availability(graph_cli, gns_name=gns_name, log=args.log, start=start)
+        # start = time.time()
+        # check_gns_availability(graph_cli, gns_name=gns_name, log=args.log, start=start)
         i += 1
 
     # domain_name = "gns-2ns-sc.local"

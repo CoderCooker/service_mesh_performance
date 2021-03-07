@@ -587,7 +587,7 @@ def create_deployment(domain_name=None, namespace=None):
         raise
 
 def create_deployment_object(domain_name=None):
-    DEPLOYMENT_NAME = "productpage"
+    DEPLOYMENT_NAME = "productpage-v1"
     # Configureate Pod template container
     
     container = client.V1Container(
@@ -611,9 +611,9 @@ def create_deployment_object(domain_name=None):
 
     # Create and configurate a spec section
     template = client.V1PodTemplateSpec(
-        metadata=client.V1ObjectMeta(labels={"app": "productpage",
-        "version":"v1"}),
+        metadata=client.V1ObjectMeta(labels={"app": "productpage","version":"v1"}),
         spec=client.V1PodSpec(containers=[container],volumes=[volume]))
+
     # Create the specification of deployment
     spec = client.V1DeploymentSpec(
         replicas=1,
