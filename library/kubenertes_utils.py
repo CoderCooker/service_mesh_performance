@@ -600,7 +600,7 @@ def create_deployment_object(domain_name=None):
         client.V1EnvVar(name="REVIEWS_HOSTNAME", value='reviews.%s'.format(domain_name))
         ],
 
-        ports=[client.V1ContainerPort(container_port=9080),
+        ports=[client.V1ContainerPort(container_port=9080)],
         volume_mounts=[client.V1VolumeMount(name="tmp", mount_path='/tmp')],
     )
 
