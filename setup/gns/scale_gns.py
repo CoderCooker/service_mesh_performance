@@ -42,12 +42,9 @@ def check_gns_service(context, namespace, domain_name, log=None, start=None):
             log.info("checking services  rt {} out {} err {}.".format(rt, out, err))
             if 'Book Details' in out.strip():
                 end = time.time()
-                response_time = end - start + count * 3
+                response_time = end - start
                 log.info("product already retrieve book details from details serivce through GNS within {} seconds.".format(response_time))
-                if response_time > 30:
-                    raise("touch TSM limits.")
-                else:
-                    return
+                return
             time.sleep(1)
         except Exception as e:
             count = count + 1
