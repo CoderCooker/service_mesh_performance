@@ -27,6 +27,9 @@ def Run(args):
     args.log.info("start testing %s"%(args.shortName))
     csp_token = os.getenv("CSP_TOKEN") if os.getenv("CSP_TOKEN") else args.opts.cspToken
     clusters = os.getenv("CLUSTERS") if os.getenv("CLUSTERS") else args.opts.clusterLists
+    gns_total = os.getenv("GNS_TOTAL") if os.getenv("GNS_TOTAL") else args.opts.iterationNumber
+    gns_total = int(gns_total.strip())
+
 
     clusters = clusters.split(",")
     for cluster in clusters:
@@ -45,7 +48,7 @@ def Run(args):
         pass
 
     i = 1
-    while i <= 20:
+    while i <= gns_total:
         # create_namespaces
         random_num = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 6))
         test_name_space = "acme-{}".format(random_num)

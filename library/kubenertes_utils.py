@@ -570,3 +570,62 @@ def create_gateway(cluster, gateway_name='my_gateway', namespace='default', host
         plural=KUBERNETES_ISTIO_GATEWAY_PLURAL
     )
     pprint(resource)
+
+def create_deployment(domain_name=None, namespace=None):
+    try:
+        config.load_kube_config()
+        apps_v1 = client.AppsV1Api()
+        deployment = create_deployment_object(domain_name)
+      
+        # Create deployement
+        api_response = apps_v1.create_namespaced_deployment(
+            body=deployment,
+            namespace=namespace)
+        print("Deployment created. status='%s'" % str(api_response.status))        
+    except ApiException as err:
+        traceback.format_exc()
+        raise
+
+def create_deployment_object(domain_name=None):
+    DEPLOYMENT_NAME = "productpage"
+    # Configureate Pod template container
+    
+    container = client.V1Container(
+        name="productpage",
+        image="docker.io/istio/examples-bookinfo-productpage-v1:1.16.2",
+        imagePullPolicy="IfNotPresent",
+
+        env=[client.V1EnvVar(name="DETAILS_HOSTNAME", value='details.{}'.format(domain_name)),
+        client.V1EnvVar(name="RATINGS_HOSTNAME", value='ratings.{}'.format(domain_name)),
+        client.V1EnvVar(name="REVIEWS_HOSTNAME", value='reviews.%s'.format(domain_name))
+        ],
+
+        ports=[client.V1ContainerPort(container_port=9080),
+        volume_mounts=[client.V1VolumeMount(name="tmp", mount_path='/tmp')],
+    )
+
+    volume = client.V1Volume(
+        name = "tmp",
+        mountPath = "/tmp",
+    )
+
+    # Create and configurate a spec section
+    template = client.V1PodTemplateSpec(
+        metadata=client.V1ObjectMeta(labels={"app": "productpage",
+        "version":"v1"}),
+        spec=client.V1PodSpec(containers=[container],
+        volumes=[volume]))
+    # Create the specification of deployment
+    spec = client.V1DeploymentSpec(
+        replicas=1,
+        template=template,
+        selector={'matchLabels': {'app': 'productpage',"version":"v1"}})
+
+    # Instantiate the deployment object
+    deployment = client.V1Deployment(
+        api_version="apps/v1",
+        kind="Deployment",
+        metadata=client.V1ObjectMeta(name=DEPLOYMENT_NAME),
+        spec=spec)
+
+    return deployment
