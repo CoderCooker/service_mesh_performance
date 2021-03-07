@@ -613,8 +613,7 @@ def create_deployment_object(domain_name=None):
     template = client.V1PodTemplateSpec(
         metadata=client.V1ObjectMeta(labels={"app": "productpage",
         "version":"v1"}),
-        spec=client.V1PodSpec(containers=[container],
-        volumes=[volume]))
+        spec=client.V1PodSpec(containers=[container],volumes=[volume]))
     # Create the specification of deployment
     spec = client.V1DeploymentSpec(
         replicas=1,
