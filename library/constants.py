@@ -100,11 +100,14 @@ JENKINS_KUBECTL_PREFIX = "echo \'centos\' | sudo -S "
 # "https://raw.githubusercontent.com/CoderCooker/TSM-GNS-APP-Perf/main/exhaust_gns/ACME/two_clusters/loadgen.yaml"]
 
 GNS_VERIFICATION_CLS1_YAMLS=[
-
+    "https://raw.githubusercontent.com/CoderCooker/service_mesh_performance/main/setup/manifests/twoclusters/cls1.yaml",
+    "https://raw.githubusercontent.com/CoderCooker/service_mesh_performance/main/setup/manifests/twoclusters/cls1-sleep.yaml"
 ]
 
 # GNS_VERIFICATION_CLS2_YAMLS=[
 # "https://raw.githubusercontent.com/CoderCooker/TSM-GNS-APP-Perf/main/exhaust_gns/ACME/two_clusters/acme_fitness_cls2.yaml",
 # "https://raw.githubusercontent.com/CoderCooker/TSM-GNS-APP-Perf/main/exhaust_gns/ACME/two_clusters/cls2_secrets.yaml"]
 
-GNS_VERIFICATION_CLS2_YAMLS=[]
+GNS_VERIFICATION_CLS2_YAMLS=[
+    "https://raw.githubusercontent.com/CoderCooker/service_mesh_performance/main/setup/manifests/twoclusters/cls2.yaml"
+]

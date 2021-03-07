@@ -51,7 +51,7 @@ def Run(args):
     while i <= gns_total:
         # create_namespaces
         random_num = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 6))
-        test_name_space = "acme-{}".format(random_num)
+        test_name_space = "tsmperf-{}".format(random_num)
         for cluster in clusters:
             create_namespace(cluster, test_name_space, log=args.log)
 
@@ -64,6 +64,9 @@ def Run(args):
             args.log.info("deploying yaml {} on {} rt {} out {} err {}.".format(cls_1_yaml, clusters[0], rt, out, err))
             assert rt == 0, "Failed deploying {} yaml on cluster 1 {}, err {}".format(cls_1_yaml, clusters[0], err)
       
+        domain_name = "{}.local".format(test_name_space)
+        create_deployment(domain_name=domain_name, namespace=test_name_space)
+
         cls2_context = "{}/{}".format(AWS_EKS_DESC, clusters[1])
         for cls_2_yaml in GNS_VERIFICATION_CLS2_YAMLS:
             deploy_service = "kubectl --context {} -n {} apply -f {}".format(cls2_context, test_name_space, cls_2_yaml)
@@ -79,7 +82,7 @@ def Run(args):
 
         gns_name = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 6))
         try:
-            gns_obj = gns.save(gns_config_dict, "{}.local".format(test_name_space), gns_name=gns_name)
+            gns_obj = gns.save(gns_config_dict, domain_name, gns_name=gns_name)
         except Exception as e:
             raise
         start = time.time()
