@@ -24,14 +24,14 @@ def check_gns_service(context, namespace, log=None, start=None):
     get_pods_cmd = 'kubectl --context {} -n {} get pods | grep sleep'.format(context, namespace)
     rt, out, err = run_local_sh_cmd(get_pods_cmd)
     assert rt == 0, "Failed get sleep pods err {}".format(err)
-    args.log.info("get pods {} rt {} out {} err {}.".format(rt, out, err))
+    log.info("get pods {} rt {} out {} err {}.".format(rt, out, err))
     sleep_pod = out.strip()
     while True:
         check_cmd = 'kubectl --context {} -n {} exec -it {}  -c sleep -- sh -c \'curl http://productpage.{}.local:9080/productpage | grep \'Book Details\''.format(context, namespace, sleep_pod)
         log.info("check services availability cmd {}".format())
         rt, out, err = run_local_sh_cmd(check_cmd)
         assert rt == 0, "Failed checking services err {}".format(err)
-        args.log.info("checking services  rt {} out {} err {}.".format(rt, out, err))
+        log.info("checking services  rt {} out {} err {}.".format(rt, out, err))
         if 'Book Details' in out.strip():
             end = time.time()
             response_time = end - start
