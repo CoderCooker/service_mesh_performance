@@ -593,7 +593,7 @@ def create_deployment_object(domain_name=None):
     container = client.V1Container(
         name="productpage",
         image="docker.io/istio/examples-bookinfo-productpage-v1:1.16.2",
-        imagePullPolicy="IfNotPresent",
+        image_pull_policy="IfNotPresent",
 
         env=[client.V1EnvVar(name="DETAILS_HOSTNAME", value='details.{}'.format(domain_name)),
         client.V1EnvVar(name="RATINGS_HOSTNAME", value='ratings.{}'.format(domain_name)),
