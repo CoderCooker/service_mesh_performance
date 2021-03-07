@@ -19,15 +19,15 @@ def config_gns(csp_token, gns_dict=None, domain_name=None, log=None):
         traceback.format_exc()
         raise
 
-def check_gns_service(context, namespace, log=None, start=None):
+def check_gns_service(context, namespace, domain_name, log=None, start=None):
     log.info('check services')
     get_pods_cmd = 'kubectl --context {} -n {} get pods | grep sleep'.format(context, namespace)
     rt, out, err = run_local_sh_cmd(get_pods_cmd)
     assert rt == 0, "Failed get sleep pods err {}".format(err)
-    log.info("get pods {} rt {} out {} err {}.".format(rt, out, err))
+    log.info("get pods {} rt {} out {} err {}.".format(get_pods_cmd, rt, out, err))
     sleep_pod = out.strip()
     while True:
-        check_cmd = 'kubectl --context {} -n {} exec -it {}  -c sleep -- sh -c \'curl http://productpage.{}.local:9080/productpage | grep \'Book Details\''.format(context, namespace, sleep_pod)
+        check_cmd = 'kubectl --context {} -n {} exec -it {}  -c sleep -- sh -c \'curl http://productpage.{}:9080/productpage | grep \'Book Details\''.format(context, namespace, sleep_pod, domain_name)
         log.info("check services availability cmd {}".format())
         rt, out, err = run_local_sh_cmd(check_cmd)
         assert rt == 0, "Failed checking services err {}".format(err)
@@ -103,7 +103,7 @@ def Run(args):
             gns_obj = gns.save(gns_config_dict, domain_name, gns_name=gns_name)
         except Exception as e:
             raise
-        check_gns_service(cls1_context, test_name_space, log=args.log, start=start)
+        check_gns_service(cls1_context, test_name_space, domain_name, log=args.log, start=start)
         # check_gns_availability(graph_cli, gns_name=gns_name, log=args.log, start=start)
         i += 1
 
