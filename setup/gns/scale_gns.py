@@ -36,8 +36,8 @@ def check_gns_service(context, namespace, log=None, start=None):
             end = time.time()
             response_time = end - start
             log.info("product already retrieve book details from details serivce through GNS within {} seconds.".format(response_time))
-            if response_time >= 30
-                raise("exceed TSM limits.")
+            if response_time > 30:
+                raise("touch TSM limits.")
         time.sleep(1)
 
 def Run(args):
