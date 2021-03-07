@@ -26,12 +26,19 @@ def check_gns_service(context, namespace, domain_name, log=None, start=None):
     assert rt == 0, "Failed get sleep pods err {}".format(err)
     log.info("get pods {} rt {} out {} err {}.".format(get_pods_cmd, rt, out, err))
     sleep_pod = out.split()[0].strip()
+    count = 1
     while True:
         check_cmd = 'kubectl --context {} -n {} exec -i {}  -c sleep -- sh -c \'curl http://productpage.{}:9080/productpage | grep \'Book Details\'\''.format(context, namespace, sleep_pod, domain_name)
         log.info("check services availability cmd {}".format(check_cmd))
         try:
             rt, out, err = run_local_sh_cmd(check_cmd)
-            assert rt == 0, "Failed checking services err {}".format(err)
+            #assert rt == 0, "Failed checking services err {}".format(err)
+            if rt != 0:
+                count = count + 1
+                if count > 35:
+                    raise
+                time.sleep(1)
+                continue
             log.info("checking services  rt {} out {} err {}.".format(rt, out, err))
             if 'Book Details' in out.strip():
                 end = time.time()
@@ -43,7 +50,11 @@ def check_gns_service(context, namespace, domain_name, log=None, start=None):
                     return
             time.sleep(1)
         except Exception as e:
-            raise
+            count = count + 1
+            if count > 35:
+                raise
+            time.sleep(1)
+            continue
         
 
 
