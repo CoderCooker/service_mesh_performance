@@ -35,11 +35,11 @@ def check_gns_service(context, namespace, domain_name, log=None, start=None):
             #assert rt == 0, "Failed checking services err {}".format(err)
             if rt != 0:
                 count = count + 1
-                if count > 100:
+                if count > 300:
                     raise
                 time.sleep(3)
                 continue
-            log.info("checking services  rt {} out {} err {}.".format(rt, out, err))
+            log.info("checking services  rt {} out {} err {} dns cost {}.".format(rt, out, err, count * 3))
             if 'Book Details' in out.strip():
                 end = time.time()
                 response_time = end - start
@@ -113,11 +113,11 @@ def Run(args):
         gns_config_dict[clusters[0]] = [test_name_space]
 
         gns_name = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 6))
-        start = time.time()
         try:
             gns_obj = gns.save(gns_config_dict, domain_name, gns_name=gns_name)
         except Exception as e:
             raise
+        start = time.time()
         check_gns_service(cls1_context, test_name_space, domain_name, log=args.log, start=start)
         # check_gns_availability(graph_cli, gns_name=gns_name, log=args.log, start=start)
         i += 1
