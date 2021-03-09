@@ -83,7 +83,7 @@ def Run(args):
     cls1_yamls = GNS_VERIFICATION_CLS1_YAMLS
     cls2_yamls = GNS_VERIFICATION_CLS2_YAMLS
     service_number = "true"
-    if service_number == "true"
+    if service_number == "true":
         cls1_yamls = SCALE_SRV_CLS1_YAMLS
         cls2_yamls = SCALE_SRV_CLS2_YAMLS
     i = 1
