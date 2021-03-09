@@ -12,7 +12,7 @@ from kubernetes import config, client
 from time import sleep
 import time
 from pprint import pprint
-from kubernetes.client.exceptions import ApiException
+from client.exceptions import ApiException
 from pathlib import Path
 import os
 
@@ -630,34 +630,58 @@ def create_deployment_object(domain_name=None):
     return deployment
 
 def create_productpage_service(context=None, name_space=None, service_name=None):
-    manifest = {
-        "apiVersion": "v1",
-        "kind": "Service",
-        "metadata":{
-            "name": "{}".format(service_name),
-            "labels":{
-                "app": "{}".format(service_name),
-                "service": "{}".format(service_name),
-            }
-        },
-        "spec":{
-            "ports":[
-                {
-                    "port": "9080",
-                    "name": "http"
-                }
-            ],
-            "selector":{
-                "app": "productpage",
-                "version": "v1"
-            }
-        }
-    }
+    # manifest = {
+    #     "apiVersion": "v1",
+    #     "kind": "Service",
+    #     "metadata":{
+    #         "name": "{}".format(service_name),
+    #         "labels":{
+    #             "app": "{}".format(service_name),
+    #             "service": "{}".format(service_name),
+    #         }
+    #     },
+    #     "spec":{
+    #         "ports":[
+    #             {
+    #                 "port": "9080",
+    #                 "name": "http"
+    #             }
+    #         ],
+    #         "selector":{
+    #             "app": "productpage",
+    #             "version": "v1"
+    #         }
+    #     }
+    # }
+
+    body = client.V1Service()
+    metadata = client.V1ObjectMeta()
+    metadata.name = "{}".format(service_name)
+    metadata.labels = {
+                        "app": "{}".format(service_name),
+                        "service": "{}".format(service_name)
+                      }
+    
+    # Creating spec
+    spec = client.V1ServiceSpec()
+
+    # Creating Port object
+    port = client.V1ServicePort()
+    port.protocol = 'http'
+    port.port = 9080
+
+    spec.ports = [ port ]
+    spec.selector = {
+                    "app": "productpage",
+                    "version": "v1"
+                    }
+
+    body.spec = spec
 
     try:
         config.load_kube_config(context=context)
         api_instance = client.CoreV1Api()
-        api_response = api_instance.create_namespaced_service(name_space, manifest, pretty='true')
+        api_response = api_instance.create_namespaced_service(name_space, body, pretty='true')
         pprint(api_response)
     except ApiException as e:
         print("Exception when calling CoreV1Api->create_namespaced_endpoints: %s\n" % e)
