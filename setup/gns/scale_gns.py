@@ -65,7 +65,7 @@ def Run(args):
 
     clusters = clusters.split(",")
     for cluster in clusters:
-        assert prepare_cluster(cluster, log=args.log) == 0, "Failed connecting {}".format(cluster)
+        assert prepare_cluster(cluster, log=args.log, cluster_type='EKS') == 0, "Failed connecting {}".format(cluster)
 
     gns = GNS(csp_token, log=args.log)
     graph_cli = GraphQLClient("{}/graphql".format(STAGING0_API_ENDPOINT))
