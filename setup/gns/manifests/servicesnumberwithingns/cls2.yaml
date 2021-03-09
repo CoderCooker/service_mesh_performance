@@ -16,20 +16,6 @@ spec:
     app: ratings
 ---
 apiVersion: v1
-kind: Service
-metadata:
-  name: ratings-1
-  labels:
-    app: ratings
-    service: ratings
-spec:
-  ports:
-  - port: 9080
-    name: http
-  selector:
-    app: ratings
----
-apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: bookinfo-ratings
@@ -71,23 +57,6 @@ kind: Service
 metadata:
   name: reviews
   labels:
-    app: reviews
-    service: reviews
-spec:
-  ports:
-  - port: 9080
-    name: http
-  selector:
-    app: reviews
----
-##################################################################################################
-# Reviews service
-##################################################################################################
-apiVersion: v1
-kind: Service
-metadata:
-    name: reviews-1
-    labels:
     app: reviews
     service: reviews
 spec:
