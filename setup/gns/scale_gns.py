@@ -60,8 +60,8 @@ def Run(args):
     csp_token = os.getenv("CSP_TOKEN") if os.getenv("CSP_TOKEN") else args.opts.cspToken
     clusters = os.getenv("CLUSTERS") if os.getenv("CLUSTERS") else args.opts.clusterLists
     gns_total = os.getenv("GNS_TOTAL") if os.getenv("GNS_TOTAL") else args.opts.iterationNumber
+    service_number = os.getenv("SERVICE_NUMBER") if os.getenv("SERVICE_NUMBER") else args.opts.serviceNumber
     gns_total = int(gns_total.strip())
-
 
     clusters = clusters.split(",")
     for cluster in clusters:
@@ -79,6 +79,13 @@ def Run(args):
         graph_cli.inject_token(access_token, headername='csp-auth-token')
         pass
 
+    
+    cls1_yamls = GNS_VERIFICATION_CLS1_YAMLS
+    cls2_yamls = GNS_VERIFICATION_CLS2_YAMLS
+    service_number = "true"
+    if service_number == "true"
+        cls1_yamls = SCALE_SRV_CLS1_YAMLS
+        cls2_yamls = SCALE_SRV_CLS2_YAMLS
     i = 1
     while i <= gns_total:
         # create_namespaces
@@ -89,7 +96,9 @@ def Run(args):
 
         # deploy_services, deploy load generator
         cls1_context = "{}/{}".format(AWS_EKS_DESC, clusters[0])
-        for cls_1_yaml in GNS_VERIFICATION_CLS1_YAMLS:
+        
+    
+        for cls_1_yaml in cls1_yamls:
             deploy_service = "kubectl --context {} -n {} apply -f {}".format(cls1_context, test_name_space, cls_1_yaml)
             args.log.info("deploying to cls1 {}".format(deploy_service))
             rt, out, err = run_local_sh_cmd(deploy_service)
@@ -100,7 +109,7 @@ def Run(args):
         create_deployment(domain_name=domain_name, namespace=test_name_space, context=cls1_context)
 
         cls2_context = "{}/{}".format(AWS_EKS_DESC, clusters[1])
-        for cls_2_yaml in GNS_VERIFICATION_CLS2_YAMLS:
+        for cls_2_yaml in cls2_yamls:
             deploy_service = "kubectl --context {} -n {} apply -f {}".format(cls2_context, test_name_space, cls_2_yaml)
             args.log.info("deploying to cls2 {}".format(deploy_service))
             rt, out, err = run_local_sh_cmd(deploy_service)

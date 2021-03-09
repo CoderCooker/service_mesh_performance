@@ -104,6 +104,16 @@ GNS_VERIFICATION_CLS1_YAMLS=[
     "https://raw.githubusercontent.com/CoderCooker/service_mesh_performance/main/setup/manifests/twoclusters/cls1-sleep.yaml"
 ]
 
+SCALE_SRV_CLS1_YAMLS=[
+    "https://raw.githubusercontent.com/CoderCooker/service_mesh_performance/main/setup/gns/manifests/servicesnumberwithingns/cls1-sleep.yaml",
+    "https://raw.githubusercontent.com/CoderCooker/service_mesh_performance/main/setup/gns/manifests/servicesnumberwithingns/cls1.yaml",
+    ""
+]
+
+SCALE_SRV_CLS2_YAMLS=[
+    "https://raw.githubusercontent.com/CoderCooker/service_mesh_performance/main/setup/gns/manifests/servicesnumberwithingns/cls2.yaml",
+]
+
 # GNS_VERIFICATION_CLS2_YAMLS=[
 # "https://raw.githubusercontent.com/CoderCooker/TSM-GNS-APP-Perf/main/exhaust_gns/ACME/two_clusters/acme_fitness_cls2.yaml",
 # "https://raw.githubusercontent.com/CoderCooker/TSM-GNS-APP-Perf/main/exhaust_gns/ACME/two_clusters/cls2_secrets.yaml"]

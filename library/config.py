@@ -70,6 +70,8 @@ class Config(object):
                               help="the GNS domain where PODS are located.")
         rt_group.add_argument("--iteration-number", dest='iterationNumber', action='store',
                               help="the iteration number of API call.")
+         rt_group.add_argument("--service-number", dest='serviceNumber', action='store',
+                              help="enable checking service number within a GNS.")
         rt_group.add_argument("--skip-onboard", dest='skipOnboard', action='store',
                               help="skip cluster on/off board.")
         rt_group.add_argument("--protocol-mode", dest='protocolMode', metavar='GRPC|HTTP|TCP',
