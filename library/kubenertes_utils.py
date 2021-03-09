@@ -12,7 +12,7 @@ from kubernetes import config, client
 from time import sleep
 import time
 from pprint import pprint
-from client.exceptions import ApiException
+from kubernetes.client.exceptions import ApiException
 from pathlib import Path
 import os
 
