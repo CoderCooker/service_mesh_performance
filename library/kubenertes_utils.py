@@ -628,3 +628,36 @@ def create_deployment_object(domain_name=None):
         spec=spec)
 
     return deployment
+
+def create_productpage_service(context=None, name_space=None, service_name=None):
+    manifest = {
+        "apiVersion": "v1",
+        "kind": "Service",
+        "metadata":{
+            "name": "{}".format(service_name),
+            "labels":{
+                "app": "{}".format(service_name)
+                "service": "{}".format(service_name)
+            }
+        },
+        "spec":{
+            "ports":[
+                {
+                    "port": "9080",
+                    "name": "http"
+                }
+            ],
+            "selector":{
+                "app": "productpage",
+                "version": "v1"
+            }
+        }
+    }
+
+    try:
+        config.load_kube_config(context=context)
+        api_instance = client.CoreV1Api()
+        api_response = api_instance.create_namespaced_service(name_space, manifest, pretty='true')
+        pprint(api_response)
+    except ApiException as e:
+        print("Exception when calling CoreV1Api->create_namespaced_endpoints: %s\n" % e)

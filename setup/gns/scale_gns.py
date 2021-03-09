@@ -108,6 +108,11 @@ def Run(args):
         domain_name = "{}.local".format(test_name_space)
         create_deployment(domain_name=domain_name, namespace=test_name_space, context=cls1_context)
 
+        j = 1
+        while j < 3:
+            create_productpage_service(context=cls1_context, name_space=test_name_space, service_name="productpage-srv-{}".format(j))
+            j = j + 1
+
         cls2_context = "{}/{}".format(AWS_EKS_DESC, clusters[1])
         for cls_2_yaml in cls2_yamls:
             deploy_service = "kubectl --context {} -n {} apply -f {}".format(cls2_context, test_name_space, cls_2_yaml)
