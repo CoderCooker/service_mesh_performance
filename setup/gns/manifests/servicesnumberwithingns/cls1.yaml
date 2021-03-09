@@ -19,7 +19,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-    name: productpage-1
+    name: productpage-svc-1
     labels:
       app: productpage
       service: productpage
