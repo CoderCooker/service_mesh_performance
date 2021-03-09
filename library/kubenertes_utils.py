@@ -636,8 +636,8 @@ def create_productpage_service(context=None, name_space=None, service_name=None)
         "metadata":{
             "name": "{}".format(service_name),
             "labels":{
-                "app": "{}".format(service_name)
-                "service": "{}".format(service_name)
+                "app": "{}".format(service_name),
+                "service": "{}".format(service_name),
             }
         },
         "spec":{
