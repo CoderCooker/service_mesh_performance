@@ -107,7 +107,6 @@ GNS_VERIFICATION_CLS1_YAMLS=[
 SCALE_SRV_CLS1_YAMLS=[
     "https://raw.githubusercontent.com/CoderCooker/service_mesh_performance/main/setup/gns/manifests/servicesnumberwithingns/cls1-sleep.yaml",
     "https://raw.githubusercontent.com/CoderCooker/service_mesh_performance/main/setup/gns/manifests/servicesnumberwithingns/cls1.yaml",
-    ""
 ]
 
 SCALE_SRV_CLS2_YAMLS=[
