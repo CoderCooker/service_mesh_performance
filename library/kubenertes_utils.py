@@ -655,12 +655,11 @@ def create_productpage_service(context=None, name_space=None, service_name=None)
     # }
 
     body = client.V1Service()
-    metadata = client.V1ObjectMeta()
-    metadata.name = "{}".format(service_name)
-    metadata.labels = {
+    body.metadata = client.V1ObjectMeta(name="{}".format(service_name),labels = {
                         "app": "{}".format(service_name),
                         "service": "{}".format(service_name)
-                      }
+                      })
+    
     
     # Creating spec
     spec = client.V1ServiceSpec()
