@@ -60,7 +60,7 @@ def Run(args):
     csp_token = os.getenv("CSP_TOKEN") if os.getenv("CSP_TOKEN") else args.opts.cspToken
     clusters = os.getenv("CLUSTERS") if os.getenv("CLUSTERS") else args.opts.clusterLists
     gns_total = os.getenv("GNS_TOTAL") if os.getenv("GNS_TOTAL") else args.opts.iterationNumber
-    srv_total = os.getenv("SRV_TOTAL") if os.getenv("SRV_TOTAL")
+    srv_total = os.getenv("SRV_TOTAL") if os.getenv("SRV_TOTAL") else args.opts.iterationNumber
     service_number = os.getenv("SERVICE_NUMBER") if os.getenv("SERVICE_NUMBER") else args.opts.serviceNumber
     gns_total = int(gns_total.strip())
     srv_total = int(srv_total.strip())
