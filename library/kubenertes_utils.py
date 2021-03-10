@@ -666,10 +666,7 @@ def create_productpage_service(context=None, name_space=None, service_name=None)
     spec = client.V1ServiceSpec()
 
     # Creating Port object
-    port = client.V1ServicePort()
-    port.name = 'http'
-    port.port = 9080
-
+    port = client.V1ServicePort(name='http', port=9080, protocol='http')
     spec.ports = [ port ]
     spec.selector = {
                     "app": "productpage",
