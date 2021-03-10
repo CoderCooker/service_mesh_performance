@@ -19,7 +19,7 @@ def config_gns(csp_token, gns_dict=None, domain_name=None, log=None):
         traceback.format_exc()
         raise
 
-def check_gns_service(context, namespace, domain_name, log=None, start=None):
+def check_gns_service(context, namespace, domain_name, log=None, start=None, srv_total=None):
     log.info('check services')
     get_pods_cmd = 'kubectl --context {} -n {} get pods | grep sleep'.format(context, namespace)
     rt, out, err = run_local_sh_cmd(get_pods_cmd)
@@ -28,14 +28,14 @@ def check_gns_service(context, namespace, domain_name, log=None, start=None):
     sleep_pod = out.split()[0].strip()
     count = 1
     while True:
-        check_cmd = 'kubectl --context {} -n {} exec -i {}  -c sleep -- sh -c \'curl http://productpage.{}:9080/productpage | grep \'Book Details\'\''.format(context, namespace, sleep_pod, domain_name)
+        check_cmd = 'kubectl --context {} -n {} exec -i {}  -c sleep -- sh -c \'curl http://productpage-srv-{}.{}:9080/productpage | grep \'Book Details\'\''.format(context, namespace, sleep_pod, srv_total, domain_name)
         log.info("check services availability cmd {}".format(check_cmd))
         try:
             rt, out, err = run_local_sh_cmd(check_cmd)
             #assert rt == 0, "Failed checking services err {}".format(err)
             if rt != 0:
                 count = count + 1
-                if count > 300:
+                if count > 1000:
                     raise
                 time.sleep(3)
                 continue
@@ -134,7 +134,7 @@ def Run(args):
         except Exception as e:
             raise
         start = time.time()
-        check_gns_service(cls1_context, test_name_space, domain_name, log=args.log, start=start)
+        check_gns_service(cls1_context, test_name_space, domain_name, log=args.log, start=start, srv_total=srv_total)
         # check_gns_availability(graph_cli, gns_name=gns_name, log=args.log, start=start)
         i += 1
 
