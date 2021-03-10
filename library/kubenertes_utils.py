@@ -630,37 +630,11 @@ def create_deployment_object(domain_name=None):
     return deployment
 
 def create_productpage_service(context=None, name_space=None, service_name=None):
-    # manifest = {
-    #     "apiVersion": "v1",
-    #     "kind": "Service",
-    #     "metadata":{
-    #         "name": "{}".format(service_name),
-    #         "labels":{
-    #             "app": "{}".format(service_name),
-    #             "service": "{}".format(service_name),
-    #         }
-    #     },
-    #     "spec":{
-    #         "ports":[
-    #             {
-    #                 "port": "9080",
-    #                 "name": "http"
-    #             }
-    #         ],
-    #         "selector":{
-    #             "app": "productpage",
-    #             "version": "v1"
-    #         }
-    #     }
-    # }
-
     body = client.V1Service()
     body.metadata = client.V1ObjectMeta(name="{}".format(service_name),labels = {
                         "app": "{}".format(service_name),
                         "service": "{}".format(service_name)
                       })
-    
-    
     # Creating spec
     spec = client.V1ServiceSpec()
 

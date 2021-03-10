@@ -60,8 +60,10 @@ def Run(args):
     csp_token = os.getenv("CSP_TOKEN") if os.getenv("CSP_TOKEN") else args.opts.cspToken
     clusters = os.getenv("CLUSTERS") if os.getenv("CLUSTERS") else args.opts.clusterLists
     gns_total = os.getenv("GNS_TOTAL") if os.getenv("GNS_TOTAL") else args.opts.iterationNumber
+    srv_total = os.getenv("SRV_TOTAL") if os.getenv("SRV_TOTAL")
     service_number = os.getenv("SERVICE_NUMBER") if os.getenv("SERVICE_NUMBER") else args.opts.serviceNumber
     gns_total = int(gns_total.strip())
+    srv_total = int(srv_total.strip())
 
     clusters = clusters.split(",")
     for cluster in clusters:
@@ -109,7 +111,7 @@ def Run(args):
         create_deployment(domain_name=domain_name, namespace=test_name_space, context=cls1_context)
 
         j = 1
-        while j < 3:
+        while j <= srv_total:
             create_productpage_service(context=cls1_context, name_space=test_name_space, service_name="productpage-srv-{}".format(j))
             j = j + 1
 
